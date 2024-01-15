@@ -18,12 +18,12 @@ class API extends \Piwik\Plugin\API
 {
     public function getResponse($idSite, $period, $date, $prompt)
     {
-        return $this->fetchMistral($prompt);
+        return $this->fetchMistralAI($prompt);
     }
 
-    function fetchMistral($prompt)
+    function fetchMistralAI($prompt)
     {
-        $settings = new \Piwik\Plugins\ChatGPT\UserSettings();
+        $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
         $api_key = $settings->apiKey->getValue();
 
         if (!$api_key) {
@@ -34,7 +34,15 @@ class API extends \Piwik\Plugin\API
             error_log('You must enter a valid prompt');
         }
 
-        $data = [];
+        $data = [
+            "model" => "mistral-tiny",
+            "messages" => [
+                [
+                    "role" => "user",
+                    "content" => $prompt
+                ]
+            ]
+        ];
 
         $headers = [
             'Content-Type: application/json',
@@ -42,7 +50,7 @@ class API extends \Piwik\Plugin\API
             'Authorization: Bearer ' . $api_key,
         ];
 
-        $ch = curl_init('https://api.openai.com/v1/chat/completions');
+        $ch = curl_init('https://api.mistral.ai/v1/chat/completions');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -1,8 +1,33 @@
 {% extends 'dashboard.twig' %}
 
 {% block content %}
-    <strong>Hello world!</strong>
-    <br/>
 
-    The answer to life is {{ answerToLife }}
+    <section class="card" id="mistral-card">
+        <div class="card-content">
+
+            <h2 class="card-title">Mistral AI</h2>
+            <p style="max-width: 800px;">Ask anything to Mistral AI.</p>
+
+
+            <div class="chat-wrapper">
+
+                <ul id="mistral-messages-list"></ul>
+
+                <div class="mistral-form-wrapper">
+                    <form action="?" method="POST" id="mistral-form">
+
+                        <div class="mistral-form-group">
+                            <input type="text" name="mistral-prompt" id="mistral-prompt" class="mistral-input"
+                                   autofocus placeholder="Ask Mistral AI..." aria-label="Mistral AI Prompt">
+                            <button type="submit" class="btn mistral-submit" id="mistral-submit-button">Submit</button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
 {% endblock %}

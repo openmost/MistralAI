@@ -13,15 +13,19 @@ class MistralAI extends \Piwik\Plugin
     public function registerEvents()
     {
         return [
-            'CronArchive.getArchivingAPIMethodForPlugin' => 'getArchivingAPIMethodForPlugin',
+            'AssetManager.getStylesheetFiles' => 'getStylesheetFiles',
+            'AssetManager.getJavaScriptFiles' => 'getJavaScriptFiles',
         ];
     }
 
-    // support archiving just this plugin via core:archive
-    public function getArchivingAPIMethodForPlugin(&$method, $plugin)
+    public function getStylesheetFiles(&$files)
     {
-        if ($plugin == 'MistralAI') {
-            $method = 'MistralAI.getExampleArchivedMetric';
-        }
+        $files[] = "plugins/MistralAI/assets/css/style.css";
     }
+
+    public function getJavaScriptFiles(&$files)
+    {
+        $files[] = "plugins/MistralAI/assets/js/script.js";
+    }
+
 }
