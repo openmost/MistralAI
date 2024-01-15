@@ -20,7 +20,7 @@ class MistralAI extends \Piwik\Plugin
 
     public function getStylesheetFiles(&$files)
     {
-        $files[] = "plugins/MistralAI/assets/css/style.css";
+        $files[] = "plugins/MistralAI/assets/less/style.less";
     }
 
     public function getJavaScriptFiles(&$files)

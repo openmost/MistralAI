@@ -1,54 +1,59 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-  const messagesList = document.getElementById('mistral-messages-list');
+    var messagesList = document.getElementById("ai-chat-conversation");
 
+    var ajaxHelper = window.ajaxHelper;
+    var ajax = new ajaxHelper();
+    var form = document.getElementById("ai-chat-form");
+    var promptInput = document.getElementById("ai-chat-prompt");
+    var submitButton = document.getElementById("ai-chat-submit-button");
 
-  const ajaxHelper = window.ajaxHelper;
-  const ajax = new ajaxHelper();
-  const form = document.getElementById('mistral-form');
-  const promptInput = document.getElementById('mistral-prompt')
-  const submitButton = document.getElementById('mistral-submit-button');
+    if (form && promptInput) {
 
-  if (form && promptInput) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            submitButton.innerText = "Loading";
+            submitButton.disabled = true;
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      submitButton.innerText = 'Loading';
-      submitButton.disabled = true;
+            var prompt = encodeURIComponent(promptInput.value);
+            addUserResponse(promptInput.value);
 
-      const prompt = encodeURIComponent(promptInput.value);
-      addUserResponse(promptInput.value);
+            ajax.setUrl(`index.php?module=API&method=MistralAI.getResponse&format=json&idSite=${piwik.idSite}&prompt=${prompt}`);
+            ajax.setCallback(function (response) {
+                submitButton.innerText = "Submit";
+                submitButton.disabled = false;
 
-      ajax.setUrl(`index.php?module=API&method=MistralAI.getResponse&format=json&idSite=${piwik.idSite}&prompt=${prompt}`);
-      ajax.setCallback(function (response) {
-        submitButton.innerText = 'Submit';
-        submitButton.disabled = false;
+                addMistralResponse(response.choices[0].message.content);
+            });
+            ajax.setFormat("json"); // the expected response format
+            ajax.send();
 
-        addMistralResponse(response.choices[0].message.content);
-      });
-      ajax.setFormat('json'); // the expected response format
-      ajax.send();
+        });
+    }
 
-    })
-  }
+    function addMistralResponse(message) {
+        messagesList.insertAdjacentHTML("beforeend", generateResponseTemplate(false, message));
+        scrollToLastMessage();
+    }
 
-  function addMistralResponse(message) {
-    messagesList.insertAdjacentHTML('beforeend', generateResponseTemplate(false, message))
-  }
+    function addUserResponse(message) {
+        messagesList.insertAdjacentHTML("beforeend", generateResponseTemplate(true, message));
+        scrollToLastMessage();
+        promptInput.value = "";
+    }
 
-  function addUserResponse(message) {
-    messagesList.insertAdjacentHTML('beforeend', generateResponseTemplate(true, message))
-    promptInput.value = '';
-  }
+    function scrollToLastMessage(){
+      messagesList.scrollTop = messagesList.scrollHeight;
+    }
 
-  function generateResponseTemplate(isUser, message) {
-    return `<li class="mistral-message">
-              <img class="message-avatar" src="https://via.placeholder.com/100" alt="">
-              <div class="message-body">
-                <strong class="message-author">${isUser ? 'You' : 'Mistral AI'}</strong>
-                <p>${message}</p>
-              </div>
-            </li>`;
-  }
+    function generateResponseTemplate(isUser, message) {
+        return `<li class="ai-chat-response ai-chat-${isUser ? 'user' : 'ai' }-response">
+            <div class="ai-chat-response-avatar"></div>
+            <div class="ai-chat-response-content-wrapper">
+                <span class="ai-chat-response-username">${isUser ? 'You' : 'Mistral AI'}</span>
+                 <div class="ai-chat-response-body">${message}</div>
+            </div>
+        </li>`;
+    }
 
 })

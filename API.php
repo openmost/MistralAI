@@ -10,7 +10,7 @@
 namespace Piwik\Plugins\MistralAI;
 
 /**
- * API for plugin ChatGPT
+ * API for plugin MistralAI
  *
  * @method static \Piwik\Plugins\MistralAI\API getInstance()
  */
@@ -39,7 +39,7 @@ class API extends \Piwik\Plugin\API
             "messages" => [
                 [
                     "role" => "user",
-                    "content" => $prompt
+                    "content" => urldecode($prompt)
                 ]
             ]
         ];

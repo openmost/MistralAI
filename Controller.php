@@ -19,9 +19,12 @@ class Controller extends \Piwik\Plugin\Controller
 {
     public function index()
     {
+        $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
+        $api_key = $settings->apiKey->getValue();
+
         // Render the Twig template templates/index.twig and assign the view variable answerToLife to the view.
         return $this->renderTemplate('index', array(
-            'answerToLife' => 42
+            'api_key' => $api_key
         ));
     }
 }
