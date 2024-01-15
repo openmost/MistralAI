@@ -2,5 +2,12 @@
 
 ## Description
 
-Enable Mistral AI support for Matomo
+This Matomo plugin allows you to connect with MistralAI
 
+## Installation
+
+Install it via Matomo Marketplace
+
+## License
+
+GPL v3 or later

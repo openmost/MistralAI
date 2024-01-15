@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.0.2
+
+Add documentation
+
 ### v5.0.1
 
 Edit chat UI
