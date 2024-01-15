@@ -2,5 +2,5 @@
 
 ## Description
 
-Add your plugin description here.
+Enable Mistral AI support for Matomo
 

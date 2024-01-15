@@ -1,29 +1,28 @@
 {
   "name": "MistralAI",
-  "description": "Mistral AI support",
-  "version": "0.1.0",
+  "description": "Mistral AI support for Matomo",
+  "version": "5.0.0",
   "theme": false,
   "require": {
-    "matomo": ">=4.0.0-b1,<5.0.0-b1"
+    "matomo": ">=5.0.0-b1,<6.0.0-b1"
   },
   "authors": [
     {
-      "name": "Matomo",
-      "email": "",
-      "homepage": ""
+      "name": "Openmost",
+      "email": "ronan@openmost.io",
+      "homepage": "https://openmost.io"
     }
   ],
   "support": {
-	    "email": "",
-	    "issues": "",
-	    "forum": "",
-	    "irc": "",
-	    "wiki": "",
-	    "source": "",
-	    "docs": "",
-	    "rss": ""
+    "email": "ronan@openmost.io",
+    "issues": "https://github.com/openmost/MistralAI/issues",
+    "source": "https://github.com/openmost/MistralAI"
   },
-  "homepage": "",
+  "homepage":"https://openmost.io",
   "license": "GPL v3+",
-  "keywords": []
+  "keywords": [
+    "mistral",
+    "ai",
+    "mistralai"
+  ]
 }
