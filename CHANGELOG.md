@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.0.3
+
+Add settings
+
 ### v5.0.2
 
 Add documentation

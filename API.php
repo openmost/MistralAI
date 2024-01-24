@@ -24,10 +24,20 @@ class API extends \Piwik\Plugin\API
     function fetchMistralAI($prompt)
     {
         $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
+        $host = $settings->host->getValue();
         $api_key = $settings->apiKey->getValue();
+        $model = $settings->model->getValue();
+
+        if (!$host) {
+            error_log('You must enter a valid host');
+        }
 
         if (!$api_key) {
             error_log('You must enter a valid API Key');
+        }
+
+        if (!$model) {
+            error_log('You must enter a valid model');
         }
 
         if (!$prompt) {
@@ -35,7 +45,7 @@ class API extends \Piwik\Plugin\API
         }
 
         $data = [
-            "model" => "mistral-tiny",
+            "model" => $model[0],
             "messages" => [
                 [
                     "role" => "user",
@@ -50,7 +60,7 @@ class API extends \Piwik\Plugin\API
             'Authorization: Bearer ' . $api_key,
         ];
 
-        $ch = curl_init('https://api.mistral.ai/v1/chat/completions');
+        $ch = curl_init($host);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
