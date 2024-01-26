@@ -1,3 +1,14 @@
+<template>
+  <div>
+    <Chat/>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import Chat from '../Components/Chat.vue';
+</script>
+
+<style lang="less">
 body {
   min-height: 100vh;
 }
@@ -11,3 +22,4 @@ body {
   gap: 1.5rem;
   min-height: 726px; //calc(100vh - 175);
 }
+</style>
