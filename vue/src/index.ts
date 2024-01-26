@@ -1,1 +1,1 @@
-export { default as IndexPage } from './IndexPage/IndexPage.vue';
+export { default as Demo } from './Demo/Demo.vue';
