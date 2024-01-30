@@ -2,14 +2,17 @@
   <li :class="chatResponseClasses">
     <div class="ai-chat-response-avatar"></div>
     <div class="ai-chat-response-content-wrapper">
-      <span class="ai-chat-response-username">{{ message.author === 'user' ? 'You' : 'AI' }}</span>
-      <div class="ai-chat-response-body">{{ message.body }}</div>
+      <span class="ai-chat-response-username">{{ chatAuthorName }}</span>
+      <div class="ai-chat-response-body" v-html="markdownToHtml"></div>
     </div>
   </li>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { Converter } from 'showdown';
+
+const converter = new Converter();
 
 export default defineComponent({
   props: {
@@ -19,11 +22,17 @@ export default defineComponent({
     },
   },
   computed: {
-    chatResponseClasses() {
+    chatResponseClasses(): Array<string> {
       return [
         'ai-chat-response',
         `ai-chat-${this.message.author}-response`,
       ];
+    },
+    chatAuthorName(): string {
+      return this.message.author === 'user' ? 'You' : 'AI';
+    },
+    markdownToHtml(): any {
+      return converter.makeHtml(this.message.body);
     },
   },
 });

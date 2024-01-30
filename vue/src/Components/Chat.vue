@@ -54,7 +54,6 @@ export default defineComponent({
       this.errored = true;
     },
     scrollDown() {
-      console.log('SCROLL DOWN', window, document);
       setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 1);
     },
   },

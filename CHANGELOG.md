@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.2.0
+
+Support Markdown syntax for response
+
 ### v5.1.4
 
 Fix default messages

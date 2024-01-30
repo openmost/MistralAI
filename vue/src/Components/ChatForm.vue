@@ -42,14 +42,13 @@ export default defineComponent({
     onFormSubmit() {
       this.$emit('formSubmit', this.prompt);
       this.loading = true;
-      const promptData = this.prompt;
-      this.prompt = '';
       AjaxHelper
         .fetch({
           method: 'MistralAI.getResponse',
-          prompt: promptData,
+          prompt: this.prompt,
         })
         .then((response) => {
+          this.prompt = '';
           this.$emit('success', response.choices[0].message.content);
         })
         .catch((error) => this.$emit('error', error))
