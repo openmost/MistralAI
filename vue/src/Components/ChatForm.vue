@@ -1,6 +1,6 @@
 <template>
   <div class="ai-chat-form-wrapper">
-    <form id="ai-chat-form" @submit.prevent="onSubmit">
+    <form id="ai-chat-form" @submit.prevent="onFormSubmit">
 
       <div class="ai-chat-form-group">
         <input v-model="prompt"
@@ -22,34 +22,45 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, defineEmits } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { AjaxHelper } from 'CoreHome';
 
-const emit = defineEmits(['submit', 'success', 'error']);
-const prompt = ref('');
-const loading = ref(false);
-
-function onSubmit() {
-  emit('submit', prompt.value);
-  loading.value = true;
-  AjaxHelper
-    .fetch({
-      method: 'MistralAI.getResponse',
-      prompt: prompt.value,
-    })
-    .then((response) => {
-      prompt.value = '';
-      emit('success', response);
-    })
-    .catch((error) => emit('error', error))
-    .finally(() => {
-      loading.value = false;
-    });
+interface DataState {
+  prompt: string;
+  loading: boolean;
 }
+
+export default defineComponent({
+  data(): DataState {
+    return {
+      prompt: '',
+      loading: false,
+    };
+  },
+  methods: {
+    onFormSubmit() {
+      this.$emit('formSubmit', this.prompt);
+      this.loading = true;
+      AjaxHelper
+        .fetch({
+          method: 'MistralAI.getResponse',
+          prompt: this.prompt,
+        })
+        .then((response) => {
+          this.prompt = '';
+          this.$emit('success', response.choices[0].message.content);
+        })
+        .catch((error) => this.$emit('error', error))
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+  },
+});
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .ai-chat-form-wrapper {
   padding: 1rem;
   border: 1px solid #9e9e9e;

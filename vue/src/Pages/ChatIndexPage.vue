@@ -4,11 +4,18 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import Chat from '../Components/Chat.vue';
+
+export default defineComponent({
+  components: {
+    Chat,
+  },
+});
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 body {
   min-height: 100vh;
 }

@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.1.1
+
+Support VueJS
+
 ### v5.1.0
 
 Change language to VueJS

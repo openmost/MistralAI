@@ -2,31 +2,34 @@
   <li :class="chatResponseClasses">
     <div class="ai-chat-response-avatar"></div>
     <div class="ai-chat-response-content-wrapper">
-      <span class="ai-chat-response-username">{{ authorName }}</span>
+      <span class="ai-chat-response-username">{{ message.author === 'user' ? 'You' : 'AI' }}</span>
       <div class="ai-chat-response-body">{{ message.body }}</div>
     </div>
   </li>
 </template>
 
-<script lang="ts" setup>
-import { defineProps, computed } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-const props = defineProps({
-  message: {
-    type: Object,
-    required: true,
+export default defineComponent({
+  props: {
+    message: {
+      type: Object,
+      required: true,
+    },
+  },
+  computed: {
+    chatResponseClasses() {
+      return [
+        'ai-chat-response',
+        `ai-chat-${this.message.author}-response`,
+      ];
+    },
   },
 });
-
-const authorName = props.message.author === 'user' ? 'You' : 'AI';
-
-const chatResponseClasses = computed(() => [
-  'ai-chat-response',
-  `ai-chat-${props.message.author}-response`,
-]);
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .ai-chat-response {
   width: 100%;
   display: flex;
