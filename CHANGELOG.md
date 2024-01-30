@@ -1,6 +1,6 @@
 ## Changelog
 
-### v5.1.1
+### v5.1.2
 
 Support VueJS
 
