@@ -57,8 +57,10 @@ export default defineComponent({
     flex-grow: 1;
 
     .ai-chat-response-username {
+      display: block;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 1.125rem;
+      margin-bottom: 4px;
     }
 
     .ai-chat-response-body {

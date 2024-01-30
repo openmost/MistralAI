@@ -1,24 +1,14 @@
 <template>
-  <div class="ai-chat-wrapper">
-    <div class="ai-chat-conversation-wrapper">
-      <ul class="ai-chat-conversation">
-        <ChatMessage v-for="(message, index) in messages" :message="message" :key="index"/>
-        <ChatLoading v-if="loading && !errored"/>
-
-        <Alert v-if="errored" severity="danger">Ooops, AI have encountered an error.</Alert>
-
-      </ul>
-      <ChatForm @formSubmit="onFormSubmit" @success="onSuccess" @error="onError"/>
-    </div>
+  <div class="ai-chat-interface-wrapper">
+    <ChatMessagesList :loading="loading" :errored="errored" :messages="messages"/>
+    <ChatForm @formSubmit="onFormSubmit" @success="onSuccess" @error="onError"/>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ChatForm from './ChatForm.vue';
-import ChatMessage from './ChatMessage.vue';
-import ChatLoading from './ChatLoading.vue';
-import Alert from '../../../../CoreHome/vue/src/Alert/Alert.vue';
+import ChatMessagesList from './ChatMessagesList.vue';
 
 interface MessageState {
   author: string,
@@ -33,16 +23,47 @@ interface DataState {
 
 export default defineComponent({
   components: {
-    Alert,
+    ChatMessagesList,
     ChatForm,
-    ChatMessage,
-    ChatLoading,
   },
   data(): DataState {
     return {
       errored: false,
       loading: false,
-      messages: [],
+      messages: [
+        {
+          author: 'user',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+        {
+          author: 'ai',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+        {
+          author: 'user',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+        {
+          author: 'ai',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+        {
+          author: 'user',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+        {
+          author: 'ai',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+        {
+          author: 'user',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+        {
+          author: 'ai',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
+        },
+      ],
     };
   },
   methods: {
@@ -52,6 +73,7 @@ export default defineComponent({
         body: prompt,
       });
       this.loading = true;
+      this.scrollDown();
     },
     onSuccess(response: string) {
       this.messages.push({
@@ -59,9 +81,14 @@ export default defineComponent({
         body: response,
       });
       this.loading = false;
+      this.scrollDown();
     },
     onError() {
       this.errored = true;
+    },
+    scrollDown() {
+      console.log('SCROLL DOWN', window, document);
+      setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 1);
     },
   },
 });
@@ -69,17 +96,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .ai-chat-conversation-wrapper {
-  overflow: auto;
-  flex: 1 1 0;
-
-  .ai-chat-conversation {
-    padding-left: 0;
-    margin-bottom: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    min-height: calc(100vh - 275px)
-  }
+  position: relative;
 }
 </style>

@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.1.3
+
+Auto scroll down when in chat responses
+
 ### v5.1.2
 
 Support VueJS

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="ai-chat-page-wrapper">
     <Chat/>
   </div>
 </template>
@@ -16,17 +16,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-body {
-  min-height: 100vh;
-}
+.ai-chat-page-wrapper {
 
-.ai-chat-wrapper {
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  min-height: 726px; //calc(100vh - 175);
 }
 </style>
