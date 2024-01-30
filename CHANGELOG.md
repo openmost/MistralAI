@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.1.4
+
+Fix default messages
+
 ### v5.1.3
 
 Auto scroll down when in chat responses

@@ -30,40 +30,7 @@ export default defineComponent({
     return {
       errored: false,
       loading: false,
-      messages: [
-        {
-          author: 'user',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-        {
-          author: 'ai',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-        {
-          author: 'user',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-        {
-          author: 'ai',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-        {
-          author: 'user',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-        {
-          author: 'ai',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-        {
-          author: 'user',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-        {
-          author: 'ai',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.',
-        },
-      ],
+      messages: [],
     };
   },
   methods: {

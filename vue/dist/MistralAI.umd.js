@@ -150,28 +150,21 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__19dc__;
 
 /***/ }),
 
-/***/ "8bbf":
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__8bbf__;
-
-/***/ }),
-
-/***/ "921c":
+/***/ "4e29":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_Chat_vue_vue_type_style_index_0_id_17bc489c_lang_less_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("a6c1");
-/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_Chat_vue_vue_type_style_index_0_id_17bc489c_lang_less_scoped_true__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_Chat_vue_vue_type_style_index_0_id_17bc489c_lang_less_scoped_true__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_Chat_vue_vue_type_style_index_0_id_25534854_lang_less_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("fe6f");
+/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_Chat_vue_vue_type_style_index_0_id_25534854_lang_less_scoped_true__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_Chat_vue_vue_type_style_index_0_id_25534854_lang_less_scoped_true__WEBPACK_IMPORTED_MODULE_0__);
 /* unused harmony reexport * */
 
 
 /***/ }),
 
-/***/ "a6c1":
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "8bbf":
+/***/ (function(module, exports) {
 
-// extracted by mini-css-extract-plugin
+module.exports = __WEBPACK_EXTERNAL_MODULE__8bbf__;
 
 /***/ }),
 
@@ -270,23 +263,23 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 }
 // CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Pages/ChatIndexPage.vue?vue&type=template&id=dfb64452&scoped=true
 
-// CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--0-1!./plugins/MistralAI/vue/src/Components/Chat.vue?vue&type=template&id=17bc489c&scoped=true
+// CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--0-1!./plugins/MistralAI/vue/src/Components/Chat.vue?vue&type=template&id=25534854&scoped=true
 
 
-Object(external_commonjs_vue_commonjs2_vue_root_Vue_["pushScopeId"])("data-v-17bc489c");
+Object(external_commonjs_vue_commonjs2_vue_root_Vue_["pushScopeId"])("data-v-25534854");
 
-var Chatvue_type_template_id_17bc489c_scoped_true_hoisted_1 = {
+var Chatvue_type_template_id_25534854_scoped_true_hoisted_1 = {
   class: "ai-chat-interface-wrapper"
 };
 
 Object(external_commonjs_vue_commonjs2_vue_root_Vue_["popScopeId"])();
 
-function Chatvue_type_template_id_17bc489c_scoped_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+function Chatvue_type_template_id_25534854_scoped_true_render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_ChatMessagesList = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["resolveComponent"])("ChatMessagesList");
 
   var _component_ChatForm = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["resolveComponent"])("ChatForm");
 
-  return Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createElementBlock"])("div", Chatvue_type_template_id_17bc489c_scoped_true_hoisted_1, [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])(_component_ChatMessagesList, {
+  return Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createElementBlock"])("div", Chatvue_type_template_id_25534854_scoped_true_hoisted_1, [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])(_component_ChatMessagesList, {
     loading: _ctx.loading,
     errored: _ctx.errored,
     messages: _ctx.messages
@@ -296,7 +289,7 @@ function Chatvue_type_template_id_17bc489c_scoped_true_render(_ctx, _cache, $pro
     onError: _ctx.onError
   }, null, 8, ["onFormSubmit", "onSuccess", "onError"])]);
 }
-// CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Chat.vue?vue&type=template&id=17bc489c&scoped=true
+// CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Chat.vue?vue&type=template&id=25534854&scoped=true
 
 // CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--0-1!./plugins/MistralAI/vue/src/Components/ChatForm.vue?vue&type=template&id=406ca338&scoped=true
 
@@ -577,31 +570,7 @@ ChatMessagesListvue_type_script_lang_ts.__scopeId = "data-v-34902d64"
     return {
       errored: false,
       loading: false,
-      messages: [{
-        author: 'user',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }, {
-        author: 'ai',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }, {
-        author: 'user',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }, {
-        author: 'ai',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }, {
-        author: 'user',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }, {
-        author: 'ai',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }, {
-        author: 'user',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }, {
-        author: 'ai',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius bibendum mauris ac lacinia. In ac arcu a mauris fermentum pellentesque nec quis lacus. Vestibulum non pulvinar ligula. Etiam lobortis malesuada facilisis. Maecenas ut nisl vitae lectus elementum mattis quis ut erat. Curabitur in purus tempus, pharetra magna efficitur, maximus augue. In ullamcorper sollicitudin rhoncus. Suspendisse luctus tellus quis dolor interdum ornare. Nunc vestibulum, risus vel blandit vehicula, elit orci faucibus sapien, at cursus ante metus non enim. Quisque consectetur pulvinar orci, sit amet euismod turpis vulputate ac. Vestibulum quis elit ut nisi tempor posuere eget ac mauris.'
-      }]
+      messages: []
     };
   },
   methods: {
@@ -634,8 +603,8 @@ ChatMessagesListvue_type_script_lang_ts.__scopeId = "data-v-34902d64"
 }));
 // CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Chat.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ./plugins/MistralAI/vue/src/Components/Chat.vue?vue&type=style&index=0&id=17bc489c&lang=less&scoped=true
-var Chatvue_type_style_index_0_id_17bc489c_lang_less_scoped_true = __webpack_require__("921c");
+// EXTERNAL MODULE: ./plugins/MistralAI/vue/src/Components/Chat.vue?vue&type=style&index=0&id=25534854&lang=less&scoped=true
+var Chatvue_type_style_index_0_id_25534854_lang_less_scoped_true = __webpack_require__("4e29");
 
 // CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Chat.vue
 
@@ -643,8 +612,8 @@ var Chatvue_type_style_index_0_id_17bc489c_lang_less_scoped_true = __webpack_req
 
 
 
-Chatvue_type_script_lang_ts.render = Chatvue_type_template_id_17bc489c_scoped_true_render
-Chatvue_type_script_lang_ts.__scopeId = "data-v-17bc489c"
+Chatvue_type_script_lang_ts.render = Chatvue_type_template_id_25534854_scoped_true_render
+Chatvue_type_script_lang_ts.__scopeId = "data-v-25534854"
 
 /* harmony default export */ var Chat = (Chatvue_type_script_lang_ts);
 // CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-typescript/node_modules/cache-loader/dist/cjs.js??ref--14-0!./node_modules/babel-loader/lib!./node_modules/@vue/cli-plugin-typescript/node_modules/ts-loader??ref--14-2!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--0-1!./plugins/MistralAI/vue/src/Pages/ChatIndexPage.vue?vue&type=script&lang=ts
@@ -683,6 +652,13 @@ ChatIndexPagevue_type_script_lang_ts.__scopeId = "data-v-dfb64452"
 
 
 
+
+/***/ }),
+
+/***/ "fe6f":
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
 
 /***/ })
 
