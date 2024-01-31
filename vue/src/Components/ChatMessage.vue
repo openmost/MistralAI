@@ -38,7 +38,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .ai-chat-response {
   width: 100%;
   display: flex;
@@ -75,45 +75,43 @@ export default defineComponent({
     .ai-chat-response-body {
       font-size: 1rem;
 
-      h1 {
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
         margin-top: 0;
         margin-bottom: 1rem;
         padding: 0;
+        color: inherit;
+        font-weight: 700;
+      }
+
+      h1 {
         font-size: calc(1.375rem + 1.5vw);
       }
 
       h2 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        padding: 0;
         font-size: calc(1.325rem + .9vw);
       }
 
       h3 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        padding: 0;
         font-size: calc(1.3rem + .6vw);
       }
 
       h4 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        padding: 0;
         font-size: calc(1.275rem + .3vw);
       }
 
       h5 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        padding: 0;
         font-size: 1.25rem;
       }
 
       h6 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        padding: 0;
         font-size: 1.125rem;
       }
 
@@ -129,7 +127,7 @@ export default defineComponent({
         border-top: unset;
       }
 
-      p code {
+      code {
         font-family: monospace;
         color: #e261a1;
         padding: 0;
@@ -148,28 +146,25 @@ export default defineComponent({
         }
       }
 
-      ul {
+      ul, ol {
         margin-top: 0;
         margin-bottom: 1rem;
-        list-style: inside;
 
         li {
+          list-style-type: unset;
+
           &:not(:last-child) {
             margin-bottom: .5rem;
           }
         }
       }
 
-      ol {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        list-style: number;
+      ul {
+        list-style: disc;
+      }
 
-        li {
-          &:not(:last-child) {
-            margin-bottom: .5rem;
-          }
-        }
+      ol {
+        list-style: number;
       }
     }
   }

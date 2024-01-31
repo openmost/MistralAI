@@ -1,5 +1,10 @@
 ## Changelog
 
+### v5.2.1
+
+Add style for supported markdown components
+Remove "embedded" model in settings pages
+
 ### v5.2.0
 
 Support Markdown syntax for response
