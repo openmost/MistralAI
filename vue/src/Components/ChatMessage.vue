@@ -31,7 +31,7 @@ export default defineComponent({
     chatAuthorName(): string {
       return this.message.author === 'user' ? 'You' : 'AI';
     },
-    markdownToHtml(): any {
+    markdownToHtml(): string {
       return converter.makeHtml(this.message.body);
     },
   },
@@ -73,8 +73,104 @@ export default defineComponent({
     }
 
     .ai-chat-response-body {
-      white-space: pre-line;
-      word-break: break-word;
+      font-size: 1rem;
+
+      h1 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 0;
+        font-size: calc(1.375rem + 1.5vw);
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 0;
+        font-size: calc(1.325rem + .9vw);
+      }
+
+      h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 0;
+        font-size: calc(1.3rem + .6vw);
+      }
+
+      h4 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 0;
+        font-size: calc(1.275rem + .3vw);
+      }
+
+      h5 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 0;
+        font-size: 1.25rem;
+      }
+
+      h6 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 0;
+        font-size: 1.125rem;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 1rem;
+      }
+
+      hr {
+        height: unset;
+        margin-top: unset;
+        margin-bottom: unset;
+        border-top: unset;
+      }
+
+      p code {
+        font-family: monospace;
+        color: #e261a1;
+        padding: 0;
+        font-size: .875em;
+        background-color: unset;
+        border-radius: unset;
+      }
+
+      pre {
+        overflow: auto;
+        margin-top: 0;
+        margin-bottom: 1rem;
+
+        code {
+          color: #fff !important;
+        }
+      }
+
+      ul {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        list-style: inside;
+
+        li {
+          &:not(:last-child) {
+            margin-bottom: .5rem;
+          }
+        }
+      }
+
+      ol {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        list-style: number;
+
+        li {
+          &:not(:last-child) {
+            margin-bottom: .5rem;
+          }
+        }
+      }
     }
   }
 }

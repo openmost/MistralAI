@@ -65,8 +65,7 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
             $field->availableValues = array(
                 'mistral-tiny' => 'tiny',
                 'mistral-small' => 'small',
-                'mistral-medium' => 'medium',
-                'mistral-embedding' => 'embedding'
+                'mistral-medium' => 'medium'
             );
             $field->validators[] = new NotEmpty();
         });
