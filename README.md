@@ -2,7 +2,7 @@
 
 ## Description
 
-This Matomo plugin allows you to connect with MistralAI
+This Matomo plugin allows you to connect with MistralAI and get insights for your reports
 
 ## Installation
 

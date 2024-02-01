@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.4
+
+Add screenshots for documentation
+
 ### v5.3.3
 
 Fix report ID in vuejs file
