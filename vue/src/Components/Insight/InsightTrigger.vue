@@ -68,6 +68,7 @@ export default defineComponent({
 
 <style lang="less">
 .ai-chat-insight-trigger-button {
+  cursor: pointer;
   float: right;
   padding: 4px;
   border: 1px solid #3450a3;

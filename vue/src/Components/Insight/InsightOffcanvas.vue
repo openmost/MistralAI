@@ -76,7 +76,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .ai-chat-insight-offcanvas {
-  z-index: 5;
+  z-index: 50;
   background-color: #fff;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, .2);
   width: 400px;
@@ -92,7 +92,7 @@ export default defineComponent({
   }
 
   .ai-chat-insight-offcanvas-header {
-    padding: 20px;
+    padding: 20px 2.5rem;
     border-bottom: 1px solid #dcdcdc;
     display: flex;
     justify-content: space-between;
@@ -111,12 +111,14 @@ export default defineComponent({
       h3 {
         margin: 0;
         color: inherit;
+        font-weight: 700;
       }
     }
 
     .actions-wrapper {
 
       .close-button {
+        cursor: pointer;
         background-color: transparent;
         border: none;
         width: 1.5rem;
@@ -139,7 +141,9 @@ export default defineComponent({
   }
 
   .ai-chat-insight-offcanvas-body {
-    padding: 1.5rem;
+    padding: 20px 2.5rem;
+    overflow-y: auto;
+    height: calc(100vh - 65px);
 
     * {
       font-size: 1rem;
