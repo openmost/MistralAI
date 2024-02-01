@@ -11,7 +11,7 @@ window.addEventListener("widget:loaded", function (e) {
     let insightTrigger = document.createElement("div");
     insightTrigger.classList.add("ai-chat-insight-trigger-vue-wrapper");
     insightTrigger.setAttribute("vue-entry", "MistralAI.InsightTrigger");
-    insightTrigger.setAttribute("report-id", "&quot;" + reportId + "&quot;");
+    insightTrigger.setAttribute("report-id", reportId);
     titleWrapper.append(insightTrigger);
 
     piwikHelper.compileVueEntryComponents(insightTrigger);

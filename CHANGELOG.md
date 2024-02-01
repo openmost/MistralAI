@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.3
+
+Fix report ID in vuejs file
+
 ### v5.3.2
 
 Enable insight for all reports
