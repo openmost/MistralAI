@@ -50,7 +50,6 @@ export default defineComponent({
         })
         .then((response) => {
           this.markdown = response.choices[0].message.content;
-          console.log(this.markdown);
         })
         .catch(() => {
           this.errored = true;
