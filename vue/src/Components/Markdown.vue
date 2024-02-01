@@ -70,6 +70,7 @@ export default defineComponent({
     font-size: 1rem !important;
     margin-top: 0 !important;
     margin-bottom: 1rem !important;
+    padding-bottom: 0 !important;
   }
 
   hr {
