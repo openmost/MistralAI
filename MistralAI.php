@@ -14,11 +14,16 @@ class MistralAI extends \Piwik\Plugin
     {
         return array(
             'AssetManager.getJavaScriptFiles' => 'getJavaScriptFiles',
+            'AssetManager.getStylesheetFiles' => 'getStylesheetFiles',
         );
     }
 
     public function getJavaScriptFiles(&$files)
     {
-        $files[] = "plugins/MistralAI/javascripts/app.js";
+        $files[] = "plugins/MistralAI/assets/js/app.js";
+    }
+    public function getStylesheetFiles(&$files)
+    {
+        $files[] = "plugins/MistralAI/assets/css/app.css";
     }
 }

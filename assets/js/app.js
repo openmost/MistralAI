@@ -9,6 +9,7 @@ window.addEventListener("widget:loaded", function (e) {
     let titleWrapper = element.querySelector(".enrichedHeadline");
 
     let insightTrigger = document.createElement("div");
+    insightTrigger.classList.add("ai-chat-insight-trigger-vue-wrapper");
     insightTrigger.setAttribute("vue-entry", "MistralAI.InsightTrigger");
     insightTrigger.setAttribute("report-id", "&quot;" + reportId + "&quot;");
     titleWrapper.append(insightTrigger);

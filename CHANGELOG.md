@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.2
+
+Enable insight for all reports
+
 ### v5.3.0
 
 Support insights
