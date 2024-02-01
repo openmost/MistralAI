@@ -144,6 +144,7 @@ export default defineComponent({
     padding: 20px 2.5rem;
     overflow-y: auto;
     height: calc(100vh - 65px);
+    scrollbar-width: none;
 
     * {
       font-size: 1rem;
