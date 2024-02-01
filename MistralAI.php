@@ -10,5 +10,16 @@ namespace Piwik\Plugins\MistralAI;
 
 class MistralAI extends \Piwik\Plugin
 {
-    //
+    public function registerEvents()
+    {
+        return array(
+            'AssetManager.getJavaScriptFiles' => 'getJavaScriptFiles',
+        );
+    }
+
+    public function getJavaScriptFiles(&$files)
+    {
+        $files[] = "plugins/MistralAI/javascripts/app.js";
+    }
+
 }

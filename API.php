@@ -9,6 +9,8 @@
 
 namespace Piwik\Plugins\MistralAI;
 
+use Piwik\API\Request;
+
 /**
  * API for plugin MistralAI
  *
@@ -18,6 +20,22 @@ class API extends \Piwik\Plugin\API
 {
     public function getResponse($idSite, $period, $date, $prompt)
     {
+        return $this->fetchMistralAI($prompt);
+    }
+
+    public function getInsight($idSite, $period, $date, $reportId)
+    {
+        $request = new Request("method=$reportId&idSite=$idSite&date=$date&period=$period&format=json");
+        $result = $request->process();
+
+        $data = Request::processRequest($reportId, array(
+            'idSite' => $idSite,
+            'date' => $date,
+            'period' => $period,
+            'format' => 'json', // this is the important bit
+        ));
+
+        $prompt = "Give me insights from the dataset formatted in JSON provided just there : $data";
         return $this->fetchMistralAI($prompt);
     }
 

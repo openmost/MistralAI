@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Chat from '../Components/Chat.vue';
+import Chat from '../Components/Chat/Chat.vue';
 
 export default defineComponent({
   components: {

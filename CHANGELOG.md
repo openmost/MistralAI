@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.0
+
+Support insights
+
 ### v5.2.1
 
 Add style for supported markdown components
