@@ -21,5 +21,4 @@ class MistralAI extends \Piwik\Plugin
     {
         $files[] = "plugins/MistralAI/javascripts/app.js";
     }
-
 }
