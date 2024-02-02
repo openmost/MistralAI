@@ -27,3 +27,12 @@ generated insights for this report.
 ### 4 - Share with others
 
 Now you tried and love this plugin, don't hesitate to share the good news !
+
+
+## API Support
+
+You can use this plugin via API with two endpoints :
+
+`MistralAI.getResponse` with parameters `$idSite`, `$period`, `$date`, `$prompt`
+
+`MistralAI.getInsights` with parameters `$idSite`, `$period`, `$date`, `$reportId`
