@@ -1,6 +1,6 @@
 ## Changelog
 
-### v5.3.5
+### v5.3.6
 
 Support base prompts
 
