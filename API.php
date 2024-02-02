@@ -20,23 +20,25 @@ class API extends \Piwik\Plugin\API
 {
     public function getResponse($idSite, $period, $date, $prompt)
     {
-        return $this->fetchMistralAI($prompt);
+        $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
+        $chatBasePrompt = $settings->chatBasePrompt->getValue() ?: "Give me insights from the dataset formatted in JSON provided below and return important information in bold format";
+
+        return $this->fetchMistralAI("$chatBasePrompt $prompt");
     }
 
-    public function getInsight($idSite, $period, $date, $reportId)
+    public function getInsights($idSite, $period, $date, $reportId)
     {
-        $request = new Request("method=$reportId&idSite=$idSite&date=$date&period=$period&format=json");
-        $result = $request->process();
-
         $data = Request::processRequest($reportId, array(
             'idSite' => $idSite,
             'date' => $date,
             'period' => $period,
-            'format' => 'json', // this is the important bit
+            'format' => 'json',
         ));
 
-        $prompt = "Give me insights from the dataset formatted in JSON provided just there : $data";
-        return $this->fetchMistralAI($prompt);
+        $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
+        $insightBasePrompt = $settings->insightBasePrompt->getValue() ?: "Give me insights from the dataset formatted in JSON provided below and return important information in bold format";
+
+        return $this->fetchMistralAI("$insightBasePrompt $data");
     }
 
     function fetchMistralAI($prompt)

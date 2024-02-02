@@ -26,6 +26,8 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
     public $host;
     public $apiKey;
     public $model;
+    public $chatBasePrompt;
+    public $insightBasePrompt;
 
     protected function init()
     {
@@ -33,7 +35,8 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
         $this->host = $this->createHostSetting();
         $this->apiKey = $this->createApiKeySetting();
         $this->model = $this->createModelSetting();
-
+        $this->chatBasePrompt = $this->createChatBasePromptSetting();
+        $this->insightBasePrompt = $this->createInsightBasePromptSetting();
     }
 
     private function createHostSetting()
@@ -67,6 +70,26 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
                 'mistral-small' => 'small',
                 'mistral-medium' => 'medium'
             );
+            $field->validators[] = new NotEmpty();
+        });
+    }
+
+    private function createChatBasePromptSetting()
+    {
+        return $this->makeSetting('chatBasePrompt', $default = 'You are a Matomo expert and know everything about digital analytics. Your answer should be complete and precise.', FieldConfig::TYPE_STRING, function (FieldConfig $field) {
+            $field->title = 'Chat base prompt';
+            $field->uiControl = FieldConfig::UI_CONTROL_TEXTAREA;
+            $field->description = 'Adapt the prompt to get more precise answer in the chat feature';
+            $field->validators[] = new NotEmpty();
+        });
+    }
+
+    private function createInsightBasePromptSetting()
+    {
+        return $this->makeSetting('insightBasePrompt', $default = 'Give me insights from the dataset formatted in JSON provided below, add bold style to most important metrics of your answer :', FieldConfig::TYPE_STRING, function (FieldConfig $field) {
+            $field->title = 'Insight base prompt';
+            $field->uiControl = FieldConfig::UI_CONTROL_TEXTAREA;
+            $field->description = 'Adapt the prompt to get more precise insights for your reports';
             $field->validators[] = new NotEmpty();
         });
     }
