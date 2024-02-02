@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.10
+
+Update insight trigger positioning
+
 ### v5.3.9
 
 Add scoped style
