@@ -65,7 +65,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .ai-chat-insight-trigger-button {
   cursor: pointer;
   float: right;

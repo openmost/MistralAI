@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.9
+
+Add scoped style
+
 ### v5.3.8
 
 Support base prompts
