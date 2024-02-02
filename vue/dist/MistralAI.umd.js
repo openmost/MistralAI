@@ -96,6 +96,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "063f":
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+
 /***/ "0b5f":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5280,21 +5287,21 @@ if (true) {
 
 /***/ }),
 
-/***/ "3b4f":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_InsightTrigger_vue_vue_type_style_index_0_id_2b5f4749_lang_less__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("ae23");
-/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_InsightTrigger_vue_vue_type_style_index_0_id_2b5f4749_lang_less__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_InsightTrigger_vue_vue_type_style_index_0_id_2b5f4749_lang_less__WEBPACK_IMPORTED_MODULE_0__);
-/* unused harmony reexport * */
-
-
-/***/ }),
-
 /***/ "426f":
 /***/ (function(module, exports, __webpack_require__) {
 
 // extracted by mini-css-extract-plugin
+
+/***/ }),
+
+/***/ "4ab9":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_InsightTrigger_vue_vue_type_style_index_0_id_4276d09a_lang_less__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("063f");
+/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_InsightTrigger_vue_vue_type_style_index_0_id_4276d09a_lang_less__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_0_1_InsightTrigger_vue_vue_type_style_index_0_id_4276d09a_lang_less__WEBPACK_IMPORTED_MODULE_0__);
+/* unused harmony reexport * */
+
 
 /***/ }),
 
@@ -5353,13 +5360,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__8bbf__;
 /***/ }),
 
 /***/ "a119":
-/***/ (function(module, exports, __webpack_require__) {
-
-// extracted by mini-css-extract-plugin
-
-/***/ }),
-
-/***/ "ae23":
 /***/ (function(module, exports, __webpack_require__) {
 
 // extracted by mini-css-extract-plugin
@@ -6045,9 +6045,9 @@ function IconMagicvue_type_template_id_8bd266ca_render(_ctx, _cache, $props, $se
 IconMagicvue_type_script_lang_ts.render = IconMagicvue_type_template_id_8bd266ca_render
 
 /* harmony default export */ var IconMagic = (IconMagicvue_type_script_lang_ts);
-// CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--0-1!./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue?vue&type=template&id=2b5f4749
+// CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--0-1!./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue?vue&type=template&id=4276d09a
 
-function InsightTriggervue_type_template_id_2b5f4749_render(_ctx, _cache, $props, $setup, $data, $options) {
+function InsightTriggervue_type_template_id_4276d09a_render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_IconMagic = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["resolveComponent"])("IconMagic");
 
   var _component_InsightOffcanvas = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["resolveComponent"])("InsightOffcanvas");
@@ -6065,7 +6065,7 @@ function InsightTriggervue_type_template_id_2b5f4749_render(_ctx, _cache, $props
     onClose: _ctx.onClose
   }, null, 8, ["display-offcanvas", "markdown", "loading", "errored", "onClose"])]);
 }
-// CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue?vue&type=template&id=2b5f4749
+// CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue?vue&type=template&id=4276d09a
 
 // CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--0-1!./plugins/MistralAI/vue/src/Components/Insight/InsightOffcanvas.vue?vue&type=template&id=324cff1c&scoped=true
 
@@ -6216,7 +6216,7 @@ InsightOffcanvasvue_type_script_lang_ts.__scopeId = "data-v-324cff1c"
       this.displayOffcanvas = !this.displayOffcanvas;
       this.loading = true;
       external_CoreHome_["AjaxHelper"].fetch({
-        method: 'MistralAI.getInsight',
+        method: 'MistralAI.getInsights',
         reportId: this.reportId
       }).then(function (response) {
         _this.markdown = response.choices[0].message.content;
@@ -6233,8 +6233,8 @@ InsightOffcanvasvue_type_script_lang_ts.__scopeId = "data-v-324cff1c"
 }));
 // CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue?vue&type=style&index=0&id=2b5f4749&lang=less
-var InsightTriggervue_type_style_index_0_id_2b5f4749_lang_less = __webpack_require__("3b4f");
+// EXTERNAL MODULE: ./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue?vue&type=style&index=0&id=4276d09a&lang=less
+var InsightTriggervue_type_style_index_0_id_4276d09a_lang_less = __webpack_require__("4ab9");
 
 // CONCATENATED MODULE: ./plugins/MistralAI/vue/src/Components/Insight/InsightTrigger.vue
 
@@ -6242,7 +6242,7 @@ var InsightTriggervue_type_style_index_0_id_2b5f4749_lang_less = __webpack_requi
 
 
 
-InsightTriggervue_type_script_lang_ts.render = InsightTriggervue_type_template_id_2b5f4749_render
+InsightTriggervue_type_script_lang_ts.render = InsightTriggervue_type_template_id_4276d09a_render
 
 /* harmony default export */ var InsightTrigger = (InsightTriggervue_type_script_lang_ts);
 // CONCATENATED MODULE: ./plugins/MistralAI/vue/src/index.ts

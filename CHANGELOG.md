@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.5
+
+Support base prompts
+
 ### v5.3.4
 
 Add screenshots for documentation

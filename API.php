@@ -21,7 +21,7 @@ class API extends \Piwik\Plugin\API
     public function getResponse($idSite, $period, $date, $prompt)
     {
         $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
-        $chatBasePrompt = $settings->chatBasePrompt->getValue() ?: "Give me insights from the dataset formatted in JSON provided below and return important information in bold format";
+        $chatBasePrompt = $settings->chatBasePrompt->getValue() ?: "You are a Matomo expert and know everything about digital analytics. Your answer should be complete and precise.";
 
         return $this->fetchMistralAI("$chatBasePrompt $prompt");
     }
@@ -36,7 +36,7 @@ class API extends \Piwik\Plugin\API
         ));
 
         $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
-        $insightBasePrompt = $settings->insightBasePrompt->getValue() ?: "Give me insights from the dataset formatted in JSON provided below and return important information in bold format";
+        $insightBasePrompt = $settings->insightBasePrompt->getValue() ?: "Give me insights from the dataset formatted in JSON provided below, add bold style to most important metrics of your answer :";
 
         return $this->fetchMistralAI("$insightBasePrompt $data");
     }
