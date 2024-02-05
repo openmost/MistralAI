@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.11
+
+Fix security issue about privileges in API
+
 ### v5.3.10
 
 Update insight trigger positioning
