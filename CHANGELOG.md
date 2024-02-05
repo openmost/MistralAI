@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.12
+
+Fix security issue in API methods
+
 ### v5.3.11
 
 Fix security issue about privileges in API

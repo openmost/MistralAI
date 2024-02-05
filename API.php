@@ -46,7 +46,7 @@ class API extends \Piwik\Plugin\API
         return $this->fetchMistralAI("$insightBasePrompt $data");
     }
 
-    function fetchMistralAI($prompt)
+    private function fetchMistralAI($prompt)
     {
         $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
         $host = $settings->host->getValue();
