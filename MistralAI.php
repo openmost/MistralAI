@@ -20,10 +20,24 @@ class MistralAI extends \Piwik\Plugin
 
     public function getJavaScriptFiles(&$files)
     {
-        $files[] = "plugins/MistralAI/assets/js/app.js";
+        if($this->pluginIsConfigured()) {
+            $files[] = "plugins/MistralAI/assets/js/app.js";
+        }
     }
+
     public function getStylesheetFiles(&$files)
     {
-        $files[] = "plugins/MistralAI/assets/css/app.css";
+        if($this->pluginIsConfigured()){
+            $files[] = "plugins/MistralAI/assets/css/app.css";
+        }
+    }
+
+    private function pluginIsConfigured(){
+        $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
+        $host = $settings->host->getValue();
+        $apiKey = $settings->apiKey->getValue();
+        $model = $settings->model->getValue();
+
+        return $host && $apiKey && $model;
     }
 }

@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.3.13
+
+Handle API errors and display messages
+
 ### v5.3.12
 
 Fix security issue in API methods
