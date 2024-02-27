@@ -66,9 +66,12 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
             $field->uiControl = FieldConfig::UI_CONTROL_SINGLE_SELECT;
             $field->description = 'Select the model you want to use';
             $field->availableValues = array(
-                'mistral-tiny' => 'tiny',
-                'mistral-small' => 'small',
-                'mistral-medium' => 'medium'
+                'open-mistral-7b' => 'Mistral 7b',
+                'open-mixtral-8x7b' => 'Open Mixtral 8x7b',
+                'mistral-tiny' => 'Tiny',
+                'mistral-small-latest' => 'Small latest',
+                'mistral-medium-latest' => 'Medium latest',
+                'mistral-large-latest' => 'Large latest'
             );
             $field->validators[] = new NotEmpty();
         });

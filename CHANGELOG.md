@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.4.0
+
+Support multiples models
+
 ### v5.3.13
 
 Handle API errors and display messages
