@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.4.1
+
+Change default model to mistral-medium-latest
+
 ### v5.4.0
 
 Support multiples models

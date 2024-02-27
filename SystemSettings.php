@@ -61,7 +61,7 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
 
     private function createModelSetting()
     {
-        return $this->makeSetting('model', $default = 'mistral-small', FieldConfig::TYPE_ARRAY, function (FieldConfig $field) {
+        return $this->makeSetting('model', $default = 'mistral-medium-latest', FieldConfig::TYPE_ARRAY, function (FieldConfig $field) {
             $field->title = 'Model';
             $field->uiControl = FieldConfig::UI_CONTROL_SINGLE_SELECT;
             $field->description = 'Select the model you want to use';
