@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.4.2
+
+Add "Open" to Mistral 7B configuration
+
 ### v5.4.1
 
 Change default model to mistral-medium-latest

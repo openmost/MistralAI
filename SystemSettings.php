@@ -66,7 +66,7 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
             $field->uiControl = FieldConfig::UI_CONTROL_SINGLE_SELECT;
             $field->description = 'Select the model you want to use';
             $field->availableValues = array(
-                'open-mistral-7b' => 'Mistral 7b',
+                'open-mistral-7b' => 'Open Mistral 7b',
                 'open-mixtral-8x7b' => 'Open Mixtral 8x7b',
                 'mistral-tiny' => 'Tiny',
                 'mistral-small-latest' => 'Small latest',
