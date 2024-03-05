@@ -1,7 +1,7 @@
 {
     "name": "MistralAI",
     "description": "Mistral AI support for Matomo",
-    "version": "5.4.2",
+    "version": "5.4.3",
     "theme": false,
     "require": {
         "matomo": ">=5.0.0-b1,<6.0.0-b1"
@@ -18,7 +18,7 @@
         "issues": "https:\/\/github.com\/openmost\/MistralAI\/issues",
         "source": "https:\/\/github.com\/openmost\/MistralAI"
     },
-    "homepage": "https:\/\/openmost.io",
+    "homepage": "https://openmost.io/products/mistral-ai/",
     "license": "GPL v3+",
     "keywords": [
         "mistral",

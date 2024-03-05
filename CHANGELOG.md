@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.4.3
+
+Update documentation URL
+
 ### v5.4.2
 
 Add "Open" to Mistral 7B configuration
