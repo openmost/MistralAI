@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.5.0
+
+Update messages continuity and insight conversation
+
 ### v5.4.3
 
 Update documentation URL
