@@ -1,7 +1,7 @@
 {
     "name": "MistralAI",
     "description": "Mistral AI support for Matomo",
-    "version": "5.5.0",
+    "version": "5.5.2",
     "theme": false,
     "require": {
         "matomo": ">=5.0.0-b1,<6.0.0-b1"
@@ -23,6 +23,10 @@
     "keywords": [
         "mistral",
         "ai",
-        "mistralai"
+        "mistralai",
+        "assistant",
+        "assistants",
+        "insight",
+        "insights"
     ]
 }

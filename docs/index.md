@@ -33,6 +33,8 @@ Now you tried and love this plugin, don't hesitate to share the good news !
 
 You can use this plugin via API with two endpoints :
 
-`MistralAI.getResponse` with parameters `$idSite`, `$period`, `$date`, `$prompt`
+`MistralAI.getResponse` with parameters `$idSite`, `$period`, `$date`, `$messages`
 
-`MistralAI.getInsights` with parameters `$idSite`, `$period`, `$date`, `$reportId`
+`MistralAI.getInsights` with parameters `$idSite`, `$period`, `$date`, `$reportId`, `$messages`
+
+Where `$messages` is an array that respect the MistralAI format.

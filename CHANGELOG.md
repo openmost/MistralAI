@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.5.2
+
+Fix Ai label in form placeholder
+
 ### v5.5.0
 
 Update messages continuity and insight conversation
