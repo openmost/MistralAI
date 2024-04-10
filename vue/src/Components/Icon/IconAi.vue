@@ -25,7 +25,8 @@
      4.77915 14.8624 4.08389 17.8666C3.24131 21.5075 4.30448 25.0587 6.59075 26.381" fill="white"/>
   </svg>
 
-  <svg v-if="aiName === 'mistral-ai'" width="256px" height="233px" viewBox="0 0 256 233" version="1.1"
+  <svg v-if="aiName === 'mistral-ai'" width="256px" height="233px" viewBox="0 0 256 233"
+       version="1.1"
        xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
     <g>
       <rect fill="#000000" x="186.181818" y="0" width="46.5454545" height="46.5454545"></rect>
