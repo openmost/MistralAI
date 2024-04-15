@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.6.0
+
+Update : Logger and MeasurableSettings
+
 ### v5.5.2
 
 Fix Ai label in form placeholder
