@@ -91,7 +91,7 @@ export default defineComponent({
       (this.$refs.chat as any).scrollDown() ;
       AjaxHelper
         .fetch({
-          method: 'ChatGPT.getInsights',
+          method: 'MistralAI.getInsights',
         }, {
           postParams: {
             reportId: this.reportId,

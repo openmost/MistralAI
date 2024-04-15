@@ -57,7 +57,7 @@ export default defineComponent({
       this.$refs.chat.scrollDown();
       AjaxHelper
         .fetch({
-          method: 'ChatGPT.getResponse',
+          method: 'MistralAI.getResponse',
         }, {
           postParams: {
             messages: this.messages,

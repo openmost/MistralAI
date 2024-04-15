@@ -9,6 +9,9 @@
 namespace Piwik\Plugins\MistralAI;
 
 
+use Piwik\Common;
+use Piwik\Piwik;
+
 /**
  * A controller lets you for example create a page that can be added to a menu. For more information read our guide
  * http://developer.piwik.org/guides/mvc-in-piwik or have a look at the our API references for controller and view:
@@ -17,10 +20,17 @@ namespace Piwik\Plugins\MistralAI;
  */
 class Controller extends \Piwik\Plugin\Controller
 {
+    /**
+     * @throws \Exception
+     */
     public function index()
     {
-        $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
-        $api_key = $settings->apiKey->getValue();
+        Piwik::checkUserHasSomeViewAccess();
+
+        $idSite = Common::getRequestVar('idSite');
+        $systemSettings = new \Piwik\Plugins\MistralAI\SystemSettings();
+        $measurableSettings = new \Piwik\Plugins\MistralAI\MeasurableSettings($idSite);
+        $api_key = $measurableSettings->apiKey->getValue() ?: $systemSettings->apiKey->getValue();
 
         // Render the Twig template templates/index.twig and assign the view variable answerToLife to the view.
         return $this->renderTemplate('index', array(
