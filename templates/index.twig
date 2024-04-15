@@ -4,11 +4,12 @@
 
     {% if(api_key) %}
 
-    <div vue-entry="MistralAI.ChatIndexPage"
-         ai-name="mistral-ai"
-         ai-label="Mistral AI"
-         ai-color="#fd6f00"
-    ></div>
+        <div vue-entry="MistralAI.ChatIndexPage"
+             ai-name="mistral-ai"
+             ai-label="Mistral AI"
+             ai-color="#fd6f00"
+             api-method="MistralAI.getResponse"
+        ></div>
 
     {% else %}
 
