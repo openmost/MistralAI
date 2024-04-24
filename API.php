@@ -72,7 +72,7 @@ class API extends \Piwik\Plugin\API
         $conversationBase = [
             [
                 "role" => "system",
-                "name" => "AI",
+                //"name" => "AI",
                 "content" => "$insightBasePrompt $data",
             ]
         ];
