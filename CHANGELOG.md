@@ -1,5 +1,9 @@
 ## Changelog
 
+### v5.6.4
+
+Update: plugin category and _cover.png
+
 ### v5.6.2
 
 Update: Handle errors to chat UI
