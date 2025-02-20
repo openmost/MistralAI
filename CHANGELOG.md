@@ -1,5 +1,14 @@
 ## Changelog
 
+### v5.7.0
+
+Update: Support more Mistral AI models.
+
+- open-mistral-nemo
+- open-mixtral-8x22b
+- ministral-3b-latest
+- ministral-8b-latest
+
 ### v5.6.4
 
 Update: plugin category and _cover.png

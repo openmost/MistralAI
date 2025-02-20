@@ -66,9 +66,13 @@ class MeasurableSettings extends \Piwik\Settings\Measurable\MeasurableSettings
             $field->description = 'Select the model you want to use';
             $field->availableValues = array(
                 '' => '',
+                'open-mistral-nemo' => 'Open Mistral nemo',
+                'ministral-3b-latest' => 'Ministral 3b latest',
+                'ministral-8b-latest' => 'Ministral 8b latest',
                 'open-mistral-7b' => 'Open Mistral 7b',
                 'open-mixtral-8x7b' => 'Open Mixtral 8x7b',
-                'mistral-tiny' => 'Tiny',
+                'open-mixtral-8x22b' => 'Open Mixtral 8x22b',
+                'mistral-tiny-latest' => 'Tiny latest',
                 'mistral-small-latest' => 'Small latest',
                 'mistral-medium-latest' => 'Medium latest',
                 'mistral-large-latest' => 'Large latest'
