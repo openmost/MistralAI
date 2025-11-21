@@ -32,7 +32,6 @@ class Controller extends \Piwik\Plugin\Controller
         $measurableSettings = new \Piwik\Plugins\MistralAI\MeasurableSettings($idSite);
         $api_key = $measurableSettings->apiKey->getValue() ?: $systemSettings->apiKey->getValue();
 
-        // Render the Twig template templates/index.twig and assign the view variable answerToLife to the view.
         return $this->renderTemplate('index', array(
             'api_key' => $api_key
         ));

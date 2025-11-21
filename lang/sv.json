@@ -1,0 +1,33 @@
+{
+    "MistralAI": {
+        "PluginDescription": "Integrera Mistral AI-assistenten i Matomo för analysinsikter och chattfunktionalitet.",
+        "Insights": "Insikter",
+        "Loading": "Laddar",
+        "Submit": "Skicka",
+        "You": "Du",
+        "AI": "AI",
+        "ErrorMessage": "Hoppsan, AI stötte på ett fel.",
+        "MessagePlaceholder": "Meddelande till %s...",
+        "AskQuestion": "Ställ en fråga till %s om denna rapport",
+        "InvalidResponse": "Ogiltigt svar från servern",
+        "AnErrorOccurred": "Ett fel uppstod",
+        "NoResponseBody": "Ingen svarsinnehåll",
+        "EnableStreaming": "Aktivera streaming",
+        "EnableStreamingDescription": "Aktivera realtids streaming-svar. Kräver serverstöd (ingen utdatabuffring). Lämna inaktiverat om svar visas på en gång.",
+        "Host": "Värd",
+        "HostDescription": "Ändra värden för att ansluta din egen Mistral-instans",
+        "ApiKey": "API-nyckel",
+        "ApiKeyDescription": "Lägg till din Mistral AI API-nyckel här",
+        "Model": "Modell",
+        "ModelDescription": "Välj den modell du vill använda. Modeller hämtas dynamiskt från API:et.",
+        "ChatBasePrompt": "Chatt bas-prompt",
+        "ChatBasePromptDescription": "Anpassa prompten för mer precisa svar i chatten",
+        "ChatBasePromptDefault": "Du är en Matomo-expert och vet allt om digital analys. Ditt svar ska vara komplett och precist.",
+        "InsightBasePrompt": "Insikt bas-prompt",
+        "InsightBasePromptDescription": "Anpassa prompten för mer precisa insikter för dina rapporter",
+        "InsightBasePromptDefault": "Ge mig insikter från datasetet i JSON-format nedan, lägg till fetstil på de viktigaste mätvärdena i ditt svar:",
+        "UseSystemDefault": "(Använd systemstandard)",
+        "ModelDescriptionMeasurable": "Välj den modell du vill använda. Lämna tomt för systemstandard.",
+        "WaitingForResponse": "Väntar på svar..."
+    }
+}

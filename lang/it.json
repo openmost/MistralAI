@@ -1,0 +1,33 @@
+{
+    "MistralAI": {
+        "PluginDescription": "Integra l'assistente Mistral AI in Matomo per insight analitici e funzionalità di chat.",
+        "Insights": "Approfondimenti",
+        "Loading": "Caricamento",
+        "Submit": "Invia",
+        "You": "Tu",
+        "AI": "IA",
+        "ErrorMessage": "Ops, l'IA ha riscontrato un errore.",
+        "MessagePlaceholder": "Messaggio a %s...",
+        "AskQuestion": "Chiedi a %s informazioni su questo report",
+        "InvalidResponse": "Risposta non valida dal server",
+        "AnErrorOccurred": "Si è verificato un errore",
+        "NoResponseBody": "Nessun corpo della risposta",
+        "EnableStreaming": "Abilita streaming",
+        "EnableStreamingDescription": "Abilita risposte in tempo reale. Richiede supporto server (nessun buffering output). Lascia disabilitato se le risposte appaiono tutte insieme.",
+        "Host": "Host",
+        "HostDescription": "Cambia l'host per collegare la tua istanza Mistral",
+        "ApiKey": "Chiave API",
+        "ApiKeyDescription": "Aggiungi qui la tua chiave API Mistral AI",
+        "Model": "Modello",
+        "ModelDescription": "Seleziona il modello che vuoi usare. I modelli vengono recuperati dinamicamente dall'API.",
+        "ChatBasePrompt": "Prompt base della chat",
+        "ChatBasePromptDescription": "Adatta il prompt per ottenere risposte più precise nella chat",
+        "ChatBasePromptDefault": "Sei un esperto di Matomo e sai tutto sull'analisi digitale. La tua risposta deve essere completa e precisa.",
+        "InsightBasePrompt": "Prompt base degli insight",
+        "InsightBasePromptDescription": "Adatta il prompt per ottenere insight più precisi per i tuoi report",
+        "InsightBasePromptDefault": "Dammi insight dal set di dati in formato JSON fornito di seguito, aggiungi stile grassetto alle metriche più importanti della tua risposta:",
+        "UseSystemDefault": "(Usa valore predefinito di sistema)",
+        "ModelDescriptionMeasurable": "Seleziona il modello che vuoi usare. Lascia vuoto per usare il valore predefinito di sistema.",
+        "WaitingForResponse": "In attesa di risposta..."
+    }
+}

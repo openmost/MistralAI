@@ -1,5 +1,18 @@
 ## Changelog
 
+### v5.8.0
+
+Major update:
+
+- Add streaming support with Server-Sent Events
+- Add rate limiting (30 requests per hour per user/site)
+- Add dynamic model fetching from API with caching
+- Add translation support (en, fr, de, es, it, nl, sv)
+- Improve error handling and validation
+- Add widget params support for insights
+- Improve security with input sanitization
+- Add SSL verification for API calls
+
 ### v5.7.0
 
 Update: Support more Mistral AI models.

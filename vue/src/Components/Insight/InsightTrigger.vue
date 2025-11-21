@@ -1,13 +1,17 @@
 <template>
   <div>
-    <button class="ai-chat-insight-trigger-button" @click="onClick">
-      <IconMagic/>
+    <button
+      class="ai-chat-insight-trigger-button"
+      :title="buttonTitle"
+      @click="onClick"
+    >
+      <IconAi :ai-name="aiName"/>
     </button>
 
     <InsightOffcanvas
       ref="offCanvas"
       :display-offcanvas="displayOffcanvas"
-      :report-id="reportId"
+      :widget-params="widgetParams"
       :ai-name="aiName"
       :ai-label="aiLabel"
       :ai-color="aiColor"
@@ -19,17 +23,18 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { translate } from 'CoreHome';
 import InsightOffcanvas from './InsightOffcanvas.vue';
-import IconMagic from '../Icon/IconMagic.vue';
+import IconAi from '../Icon/IconAi.vue';
 
 export default defineComponent({
   components: {
+    IconAi,
     InsightOffcanvas,
-    IconMagic,
   },
   props: {
-    reportId: {
-      type: String,
+    widgetParams: {
+      type: Object,
       required: true,
     },
     aiName: {
@@ -54,10 +59,15 @@ export default defineComponent({
       displayOffcanvas: false,
     };
   },
+  computed: {
+    buttonTitle(): string {
+      return translate('MistralAI_AskQuestion', this.aiLabel);
+    },
+  },
   methods: {
     onClick() {
       this.displayOffcanvas = !this.displayOffcanvas;
-      this.$refs.offCanvas.onSubmit();
+      (this.$refs.offCanvas as InstanceType<typeof InsightOffcanvas>).onSubmit();
     },
     onClose() {
       this.displayOffcanvas = false;
@@ -69,7 +79,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .ai-chat-insight-trigger-button {
   background-color: transparent;
-  padding: 0;
+  padding: 3px;
   cursor: pointer;
   float: right;
   border: 1px solid v-bind(aiColor);

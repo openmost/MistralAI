@@ -1,0 +1,33 @@
+{
+    "MistralAI": {
+        "PluginDescription": "Intégrez l'assistant Mistral AI dans Matomo pour des analyses et des fonctionnalités de chat.",
+        "Insights": "Analyses",
+        "Loading": "Chargement",
+        "Submit": "Envoyer",
+        "You": "Vous",
+        "AI": "IA",
+        "ErrorMessage": "Oups, l'IA a rencontré une erreur.",
+        "MessagePlaceholder": "Message %s...",
+        "AskQuestion": "Posez une question à %s sur ce rapport",
+        "InvalidResponse": "Réponse invalide du serveur",
+        "AnErrorOccurred": "Une erreur s'est produite",
+        "NoResponseBody": "Pas de corps de réponse",
+        "EnableStreaming": "Activer le streaming",
+        "EnableStreamingDescription": "Activer les réponses en temps réel. Nécessite un support serveur (pas de mise en mémoire tampon). Laissez désactivé si les réponses apparaissent d'un coup.",
+        "Host": "Hôte",
+        "HostDescription": "Changez l'hôte pour connecter votre propre instance Mistral",
+        "ApiKey": "Clé API",
+        "ApiKeyDescription": "Ajoutez votre clé API Mistral AI ici",
+        "Model": "Modèle",
+        "ModelDescription": "Sélectionnez le modèle que vous souhaitez utiliser. Les modèles sont récupérés dynamiquement depuis l'API.",
+        "ChatBasePrompt": "Prompt de base du chat",
+        "ChatBasePromptDescription": "Adaptez le prompt pour obtenir des réponses plus précises dans le chat",
+        "ChatBasePromptDefault": "Vous êtes un expert Matomo et connaissez tout sur l'analyse numérique. Votre réponse doit être complète et précise.",
+        "InsightBasePrompt": "Prompt de base des analyses",
+        "InsightBasePromptDescription": "Adaptez le prompt pour obtenir des analyes plus précis pour vos rapports",
+        "InsightBasePromptDefault": "Donnez-moi des insights du jeu de données formaté en JSON ci-dessous, ajoutez un style gras aux métriques les plus importantes de votre réponse:",
+        "UseSystemDefault": "(Utiliser la valeur système par défaut)",
+        "ModelDescriptionMeasurable": "Sélectionnez le modèle que vous souhaitez utiliser. Laissez vide pour utiliser la valeur système par défaut.",
+        "WaitingForResponse": "En attente de réponse..."
+    }
+}

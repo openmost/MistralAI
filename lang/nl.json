@@ -1,0 +1,33 @@
+{
+    "MistralAI": {
+        "PluginDescription": "Integreer de Mistral AI-assistent in Matomo voor analytische inzichten en chatfunctionaliteit.",
+        "Insights": "Inzichten",
+        "Loading": "Laden",
+        "Submit": "Verzenden",
+        "You": "Jij",
+        "AI": "AI",
+        "ErrorMessage": "Oeps, de AI heeft een fout ondervonden.",
+        "MessagePlaceholder": "Bericht aan %s...",
+        "AskQuestion": "Stel %s een vraag over dit rapport",
+        "InvalidResponse": "Ongeldige reactie van server",
+        "AnErrorOccurred": "Er is een fout opgetreden",
+        "NoResponseBody": "Geen responsinhoud",
+        "EnableStreaming": "Streaming inschakelen",
+        "EnableStreamingDescription": "Realtime streaming-antwoorden inschakelen. Vereist serverondersteuning (geen outputbuffering). Uitgeschakeld laten als antwoorden in één keer verschijnen.",
+        "Host": "Host",
+        "HostDescription": "Wijzig de host om je eigen Mistral-instantie te verbinden",
+        "ApiKey": "API-sleutel",
+        "ApiKeyDescription": "Voeg hier je Mistral AI API-sleutel toe",
+        "Model": "Model",
+        "ModelDescription": "Selecteer het model dat je wilt gebruiken. Modellen worden dynamisch opgehaald van de API.",
+        "ChatBasePrompt": "Chat basis prompt",
+        "ChatBasePromptDescription": "Pas de prompt aan voor preciezere antwoorden in de chat",
+        "ChatBasePromptDefault": "Je bent een Matomo-expert en weet alles over digitale analyse. Je antwoord moet volledig en nauwkeurig zijn.",
+        "InsightBasePrompt": "Insight basis prompt",
+        "InsightBasePromptDescription": "Pas de prompt aan voor preciezere inzichten voor je rapporten",
+        "InsightBasePromptDefault": "Geef me inzichten uit de onderstaande JSON-geformatteerde dataset, voeg vetgedrukte stijl toe aan de belangrijkste statistieken in je antwoord:",
+        "UseSystemDefault": "(Systeemstandaard gebruiken)",
+        "ModelDescriptionMeasurable": "Selecteer het model dat je wilt gebruiken. Laat leeg voor systeemstandaard.",
+        "WaitingForResponse": "Wachten op antwoord..."
+    }
+}

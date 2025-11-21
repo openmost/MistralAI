@@ -10,18 +10,16 @@ the `/plugins` folder.
 To activate Mistral AI, you have to set your API Key to the System Settings as a superuser.
 Once you set your API Key, a chatbox will appear on the dedicated page.
 
-You can also choose between many models :
+You can also choose between many models:
 
-- Open Mistral nemo `open-mistral-nemo`
-- Ministral 3b latest `ministral-3b-latest`
-- Ministral 8b latest `ministral-8b-latest`
-- Open Mistral 7b `open-mistral-7b`
-- Open Mixtral 8x7b `open-mixtral-8x7b`
-- Open Mixtral 8x22b `open-mixtral-8x22b`
-- Tiny latest `mistral-tiny-latest`
-- Small latest `mistral-small-latest`
-- Medium latest `mistral-medium-latest`
-- Large lates `mistral-large-latest`
+- Mistral Large `mistral-large-latest`
+- Mistral Medium `mistral-medium-latest`
+- Mistral Small `mistral-small-latest`
+- Open Mistral Nemo `open-mistral-nemo`
+- Codestral `codestral-latest`
+- Pixtral Large `pixtral-large-latest`
+- Ministral 8B `ministral-8b-latest`
+- Ministral 3B `ministral-3b-latest`
 
 And adjust the base prompt for the chat and the insight. You are free to make your own prompt to enhance the answer of
 AI.
@@ -42,6 +40,6 @@ You can use this plugin via API with two endpoints :
 
 `MistralAI.getResponse` with parameters `$idSite`, `$period`, `$date`, `$messages`
 
-`MistralAI.getInsights` with parameters `$idSite`, `$period`, `$date`, `$reportId`, `$messages`
+`MistralAI.getInsights` with parameters `$idSite`, `$period`, `$date`, `$messages`, `$widgetParams`
 
-Where `$messages` is an array that respect the MistralAI format.
+Where `$messages` is in the MistralAI conversation format.

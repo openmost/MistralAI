@@ -21,7 +21,7 @@ class Menu extends \Piwik\Plugin\Menu
 
     public function configureTopMenu(MenuTop $menu)
     {
-        $menu->addItem('Mistral AI', null, $this->urlForDefaultAction(), $orderId = 30);
+        $menu->addItem('MistralAI', null, $this->urlForDefaultAction(), $orderId = 30);
     }
 
     public function configureAdminMenu(MenuAdmin $menu)

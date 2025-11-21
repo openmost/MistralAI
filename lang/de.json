@@ -1,0 +1,33 @@
+{
+    "MistralAI": {
+        "PluginDescription": "Integrieren Sie den Mistral AI-Assistenten in Matomo für analytische Einblicke und Chat-Funktionalität.",
+        "Insights": "Einblicke",
+        "Loading": "Wird geladen",
+        "Submit": "Absenden",
+        "You": "Sie",
+        "AI": "KI",
+        "ErrorMessage": "Hoppla, die KI ist auf einen Fehler gestoßen.",
+        "MessagePlaceholder": "Nachricht an %s...",
+        "AskQuestion": "Stellen Sie %s eine Frage zu diesem Bericht",
+        "InvalidResponse": "Ungültige Antwort vom Server",
+        "AnErrorOccurred": "Ein Fehler ist aufgetreten",
+        "NoResponseBody": "Kein Antworttext",
+        "EnableStreaming": "Streaming aktivieren",
+        "EnableStreamingDescription": "Echtzeit-Streaming-Antworten aktivieren. Erfordert Server-Unterstützung (keine Ausgabepufferung). Deaktiviert lassen, wenn Antworten auf einmal erscheinen.",
+        "Host": "Host",
+        "HostDescription": "Ändern Sie den Host, um Ihre eigene Mistral-Instanz zu verbinden",
+        "ApiKey": "API-Schlüssel",
+        "ApiKeyDescription": "Fügen Sie hier Ihren Mistral AI API-Schlüssel hinzu",
+        "Model": "Modell",
+        "ModelDescription": "Wählen Sie das Modell, das Sie verwenden möchten. Modelle werden dynamisch von der API abgerufen.",
+        "ChatBasePrompt": "Chat-Basis-Prompt",
+        "ChatBasePromptDescription": "Passen Sie den Prompt an, um präzisere Antworten im Chat zu erhalten",
+        "ChatBasePromptDefault": "Sie sind ein Matomo-Experte und wissen alles über digitale Analytik. Ihre Antwort sollte vollständig und präzise sein.",
+        "InsightBasePrompt": "Insight-Basis-Prompt",
+        "InsightBasePromptDescription": "Passen Sie den Prompt an, um präzisere Einblicke für Ihre Berichte zu erhalten",
+        "InsightBasePromptDefault": "Geben Sie mir Einblicke aus dem unten im JSON-Format bereitgestellten Datensatz, fügen Sie den wichtigsten Metriken Ihrer Antwort fette Schrift hinzu:",
+        "UseSystemDefault": "(Systemstandard verwenden)",
+        "ModelDescriptionMeasurable": "Wählen Sie das Modell, das Sie verwenden möchten. Leer lassen für Systemstandard.",
+        "WaitingForResponse": "Warte auf Antwort..."
+    }
+}
