@@ -1,5 +1,9 @@
 ## Changelog
 
+### 5.8.1
+
+update: Support premium plugins
+
 ### v5.8.0
 
 Major update:
