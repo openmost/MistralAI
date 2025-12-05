@@ -3,8 +3,8 @@
   <svg
     v-if="aiName === 'chat-gpt'"
     xmlns="http://www.w3.org/2000/svg"
-    width="47"
-    height="47"
+    width="18"
+    height="18"
     viewBox="0 0 47 47"
     fill="none"
   >
@@ -17,7 +17,7 @@
   </svg>
   <!-- eslint-enable max-len -->
 
-  <svg v-if="aiName === 'mistral-ai'" width="365" height="258" viewBox="0 0 365 258" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg v-if="aiName === 'mistral-ai'" width="25.5" height="18" viewBox="0 0 365 258" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g id="Mistral AI Logo">
       <path d="M104.107 0H52.0525V51.57H104.107V0Z" fill="#FFD800"/>
       <path d="M312.351 0H260.296V51.57H312.351V0Z" fill="#FFD800"/>

@@ -10,7 +10,6 @@
 namespace Piwik\Plugins\MistralAI;
 
 use Piwik\API\Request;
-use Piwik\Cache;
 use Piwik\Common;
 use Piwik\Option;
 use Piwik\Piwik;
@@ -31,11 +30,6 @@ class API extends \Piwik\Plugin\API
     private const REQUEST_TIMEOUT = 60;
 
     /**
-     * Cache TTL for models list (1 hour)
-     */
-    private const MODELS_CACHE_TTL = 3600;
-
-    /**
      * Rate limit settings
      */
     private const RATE_LIMIT_REQUESTS = 30;
@@ -53,25 +47,15 @@ class API extends \Piwik\Plugin\API
         $idSite = (int) Common::getRequestVar('idSite');
         Piwik::checkUserHasViewAccess($idSite);
 
+        // Get messages from request if not passed or if passed as JSON string
+        $messages = $this->parseMessagesParam($messages);
+
         // Check rate limit
         $this->checkRateLimit($idSite);
-
-        // Handle JSON-encoded messages from POST body
-        if (is_string($messages)) {
-            $messages = json_decode($messages, true) ?: [];
-        }
-        if (!is_array($messages)) {
-            $messages = [];
-        }
 
         $systemSettings = new SystemSettings();
         $measurableSettings = new MeasurableSettings($idSite);
         $chatBasePrompt = $measurableSettings->chatBasePrompt->getValue() ?: $systemSettings->chatBasePrompt->getValue();
-
-        // Mistral requires at least one user message
-        if (empty($messages)) {
-            return ['error' => ['message' => 'Please enter a message']];
-        }
 
         $conversationBase = [
             [
@@ -83,12 +67,16 @@ class API extends \Piwik\Plugin\API
         return $this->fetchModelAi(array_merge($conversationBase, $messages), $idSite);
     }
 
-    public function getInsights(int $idSite, string $period, string $date, array $messages = [], array $widgetParams = []): array
+    public function getInsights(int $idSite, string $period, string $date, $messages = [], $widgetParams = []): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
         $idSite = (int) Common::getRequestVar('idSite');
         Piwik::checkUserHasViewAccess($idSite);
+
+        // Parse messages and widgetParams from POST
+        $messages = $this->parseMessagesParam($messages);
+        $widgetParams = $this->parseWidgetParams($widgetParams);
 
         // Check rate limit
         $this->checkRateLimit($idSite);
@@ -112,11 +100,7 @@ class API extends \Piwik\Plugin\API
         $conversationBase = [
             [
                 "role" => "system",
-                "content" => $insightBasePrompt,
-            ],
-            [
-                "role" => "user",
-                "content" => "Analyze this data: $data",
+                "content" => "$insightBasePrompt $data",
             ]
         ];
 
@@ -125,46 +109,60 @@ class API extends \Piwik\Plugin\API
 
     /**
      * Streams a response from the AI model using Server-Sent Events
-     * Call this endpoint directly for streaming support
+     * If widgetParams are present, fetches report data first (insight mode)
      */
-    public function getStreamingResponse(int $idSite, string $period, string $date, $messages = []): void
+    public function getStreamingResponse(int $idSite, string $period, string $date, $messages = [], $widgetParams = []): void
     {
         Piwik::checkUserHasSomeViewAccess();
 
         $idSite = (int) Common::getRequestVar('idSite');
         Piwik::checkUserHasViewAccess($idSite);
 
+        // Parse messages and widgetParams from POST
+        $messages = $this->parseMessagesParam($messages);
+        $widgetParams = $this->parseWidgetParams($widgetParams);
+
         $this->checkRateLimit($idSite);
-
-        // Get messages from POST body - try multiple methods
-        $messagesRaw = '';
-        if (isset($_POST['messages'])) {
-            $messagesRaw = $_POST['messages'];
-        } elseif (isset($_REQUEST['messages'])) {
-            $messagesRaw = $_REQUEST['messages'];
-        } else {
-            $messagesRaw = Common::getRequestVar('messages', '', 'string');
-        }
-
-        if (!empty($messagesRaw) && is_string($messagesRaw)) {
-            $messages = json_decode($messagesRaw, true) ?: [];
-        } elseif (is_string($messages) && !empty($messages)) {
-            $messages = json_decode($messages, true) ?: [];
-        }
-        if (!is_array($messages)) {
-            $messages = [];
-        }
 
         $systemSettings = new SystemSettings();
         $measurableSettings = new MeasurableSettings($idSite);
-        $chatBasePrompt = $measurableSettings->chatBasePrompt->getValue() ?: $systemSettings->chatBasePrompt->getValue();
 
-        $conversationBase = [
-            [
-                "role" => "system",
-                "content" => $chatBasePrompt,
-            ]
-        ];
+        // Check if this is an insight request (has widgetParams with module/action)
+        $isInsight = !empty($widgetParams) && (isset($widgetParams['module']) || isset($widgetParams['action']));
+
+        if ($isInsight) {
+            // Insight mode: fetch report data and use insight prompt
+            $insightBasePrompt = $measurableSettings->insightBasePrompt->getValue() ?: $systemSettings->insightBasePrompt->getValue();
+
+            $requestParams = $this->buildRequestParams($widgetParams, $idSite, $date, $period);
+            $apiMethod = $this->resolveReportMethod($requestParams['_apiMethod'], $widgetParams);
+            unset($requestParams['_apiMethod']);
+
+            // Validate API method format (Module.action)
+            if (!preg_match('/^[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/', $apiMethod)) {
+                throw new Exception('Invalid API method format');
+            }
+
+            // Fetch report data
+            $data = Request::processRequest($apiMethod, $requestParams);
+
+            $conversationBase = [
+                [
+                    "role" => "system",
+                    "content" => "$insightBasePrompt $data",
+                ]
+            ];
+        } else {
+            // Regular chat mode
+            $chatBasePrompt = $measurableSettings->chatBasePrompt->getValue() ?: $systemSettings->chatBasePrompt->getValue();
+
+            $conversationBase = [
+                [
+                    "role" => "system",
+                    "content" => $chatBasePrompt,
+                ]
+            ];
+        }
 
         $this->streamModelAi(array_merge($conversationBase, $messages), $idSite);
     }
@@ -229,7 +227,7 @@ class API extends \Piwik\Plugin\API
 
         // Sanitize module and action (alphanumeric only)
         $module = isset($widgetParams['module']) ? preg_replace('/[^a-zA-Z0-9]/', '', $widgetParams['module']) : '';
-        $action = isset($widgetParams['action']) ? preg_replace('/[^a-zA-Z0-9]/', '', $widgetParams['action']) : '';
+        $action = preg_replace('/[^a-zA-Z0-9]/', '', $action);
         $requestParams['_apiMethod'] = $module . '.' . $action;
 
         // Define supported parameters with their validation rules
@@ -341,126 +339,6 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
-     * Retrieves the list of available models from the Mistral API
-     * Results are cached for performance
-     *
-     * @param string|null $host API base URL (optional)
-     * @param string|null $apiKey API Key (optional)
-     * @param bool $forceRefresh Force cache refresh
-     * @return array List of available models
-     */
-    public function getAvailableModels(?string $host = null, ?string $apiKey = null, bool $forceRefresh = false): array
-    {
-        Piwik::checkUserHasSomeViewAccess();
-
-        $systemSettings = new SystemSettings();
-
-        $configuredHost = $host ?: $systemSettings->host->getValue();
-        $configuredApiKey = $apiKey ?: $systemSettings->apiKey->getValue();
-
-        if (!$configuredHost || !$configuredApiKey) {
-            return ['error' => 'Host and API Key must be configured first', 'models' => []];
-        }
-
-        if (!$this->isValidApiUrl($configuredHost)) {
-            return ['error' => 'Invalid API host URL', 'models' => []];
-        }
-
-        // Check cache first (unless force refresh)
-        $cacheKey = 'MistralAI_models_' . md5($configuredHost);
-        $cache = Cache::getLazyCache();
-
-        if (!$forceRefresh) {
-            $cachedModels = $cache->fetch($cacheKey);
-            if ($cachedModels !== false) {
-                return ['models' => $cachedModels, 'error' => null, 'cached' => true];
-            }
-        }
-
-        // Fetch from API
-        $baseUrl = preg_replace('#/v1/.*$#', '/v1', $configuredHost);
-        $modelsUrl = $baseUrl . '/models';
-
-        $headers = [
-            'Content-Type: application/json',
-            'Accept: application/json',
-            'Authorization: Bearer ' . $configuredApiKey,
-        ];
-
-        $ch = curl_init($modelsUrl);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-
-        if ($curlError) {
-            $this->logger->warning('MistralAI API error fetching models: ' . $curlError);
-            return ['error' => 'Connection error: ' . $curlError, 'models' => []];
-        }
-
-        if ($httpCode !== 200) {
-            return ['error' => 'Failed to fetch models (HTTP ' . $httpCode . ')', 'models' => []];
-        }
-
-        if (empty($response)) {
-            return ['error' => 'Empty response from API', 'models' => []];
-        }
-
-        $data = json_decode($response, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return ['error' => 'Invalid JSON response from API', 'models' => []];
-        }
-
-        if (!isset($data['data']) || !is_array($data['data'])) {
-            return ['error' => 'Invalid response structure from API', 'models' => []];
-        }
-
-        $models = [];
-        foreach ($data['data'] as $model) {
-            if (!isset($model['id']) || !is_string($model['id'])) {
-                continue;
-            }
-            $modelId = $model['id'];
-            if (preg_match('/^(mistral|codestral|pixtral|ministral|open-)/i', $modelId)) {
-                $models[$modelId] = $modelId;
-            }
-        }
-
-        ksort($models);
-
-        // Cache the results
-        $cache->save($cacheKey, $models, self::MODELS_CACHE_TTL);
-
-        return ['models' => $models, 'error' => null, 'cached' => false];
-    }
-
-    /**
-     * Clears the models cache
-     */
-    public function clearModelsCache(): array
-    {
-        Piwik::checkUserHasSuperUserAccess();
-
-        $systemSettings = new SystemSettings();
-        $configuredHost = $systemSettings->host->getValue();
-
-        if ($configuredHost) {
-            $cacheKey = 'MistralAI_models_' . md5($configuredHost);
-            $cache = Cache::getLazyCache();
-            $cache->delete($cacheKey);
-        }
-
-        return ['success' => true];
-    }
-
-    /**
      * Validates that the URL is a valid HTTPS API endpoint
      */
     private function isValidApiUrl(?string $url): bool
@@ -495,6 +373,8 @@ class API extends \Piwik\Plugin\API
             'Authorization: Bearer ' . $config['apiKey'],
         ];
 
+        $this->logger->info('MistralAI API request to model: ' . $config['model'] . ' at ' . $config['host']);
+
         $ch = curl_init($config['host']);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
@@ -510,8 +390,6 @@ class API extends \Piwik\Plugin\API
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        $this->logger->info('MistralAI API request to model: ' . $config['model']);
-
         if ($curlError) {
             $this->logger->error('MistralAI API curl error: ' . $curlError);
             throw new Exception('Connection error: ' . $curlError);
@@ -522,52 +400,23 @@ class API extends \Piwik\Plugin\API
         }
 
         $result = json_decode($response, true);
-
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return ['error' => ['message' => 'Invalid response from MistralAI API (HTTP ' . $httpCode . ')']];
+            $this->logger->error('MistralAI API invalid JSON response: ' . substr($response, 0, 500));
+            throw new Exception('Invalid JSON response from MistralAI API');
         }
 
-        // Handle errors - return as error array for frontend display
-        if ($httpCode !== 200) {
-            $errorMessage = $this->extractMistralError($result, $httpCode);
-            return ['error' => ['message' => $errorMessage]];
-        }
-
-        // Also check for error in successful response (shouldn't happen but just in case)
         if (isset($result['error'])) {
-            $errorMessage = $result['error']['message'] ?? $result['error'] ?? 'Unknown API error';
+            $errorMessage = $result['error']['message'] ?? 'Unknown API error';
+            $this->logger->warning('MistralAI API error: ' . $errorMessage);
             return ['error' => ['message' => $errorMessage]];
+        }
+
+        if ($httpCode !== 200) {
+            $this->logger->error('MistralAI API HTTP ' . $httpCode . ': ' . substr($response, 0, 500));
+            throw new Exception('MistralAI API returned HTTP ' . $httpCode);
         }
 
         return $result;
-    }
-
-    /**
-     * Extracts error message from Mistral API response
-     * Mistral uses different error formats than OpenAI
-     */
-    private function extractMistralError(array $result, int $httpCode): string
-    {
-        // Mistral format: {"message": "..."} or {"detail": "..."}
-        if (isset($result['message'])) {
-            return $result['message'];
-        }
-
-        if (isset($result['detail'])) {
-            return is_string($result['detail']) ? $result['detail'] : json_encode($result['detail']);
-        }
-
-        // OpenAI-like format: {"error": {"message": "..."}}
-        if (isset($result['error']['message'])) {
-            return $result['error']['message'];
-        }
-
-        if (isset($result['error']) && is_string($result['error'])) {
-            return $result['error'];
-        }
-
-        // Fallback
-        return 'API error (HTTP ' . $httpCode . ')';
     }
 
     /**
@@ -647,13 +496,22 @@ class API extends \Piwik\Plugin\API
         $systemSettings = new SystemSettings();
         $measurableSettings = new MeasurableSettings($idSite);
 
-        $host = trim($measurableSettings->host->getValue() ?: $systemSettings->host->getValue());
-        $apiKey = trim($measurableSettings->apiKey->getValue() ?: $systemSettings->apiKey->getValue());
-        $model = $systemSettings->model->getValue();
+        $host = $measurableSettings->host->getValue() ?: $systemSettings->host->getValue();
+        $apiKey = $measurableSettings->apiKey->getValue() ?: $systemSettings->apiKey->getValue();
 
-        $measurableModel = $measurableSettings->model->getValue();
-        if (is_array($measurableModel) && !empty($measurableModel[0])) {
-            $model = $measurableModel;
+        // Get model: prefer custom model if set, otherwise use preset
+        $model = $systemSettings->modelCustom->getValue();
+        if (empty($model)) {
+            $model = $systemSettings->modelPreset->getValue();
+        }
+
+        // Check measurable settings override
+        $measurableModelCustom = $measurableSettings->modelCustom->getValue();
+        $measurableModelPreset = $measurableSettings->modelPreset->getValue();
+        if (!empty($measurableModelCustom)) {
+            $model = $measurableModelCustom;
+        } elseif (!empty($measurableModelPreset)) {
+            $model = $measurableModelPreset;
         }
 
         if (empty($host)) {
@@ -672,22 +530,108 @@ class API extends \Piwik\Plugin\API
             throw new Exception('Invalid API host URL - HTTPS required');
         }
 
-        // Extract model string from array (handles both numeric and associative arrays)
-        $modelString = $model;
-        if (is_array($model)) {
-            // For associative arrays, use the first key; for numeric arrays, use first value
-            $modelString = isset($model[0]) ? $model[0] : array_key_first($model);
-        }
-
         return [
             'host' => $host,
             'apiKey' => $apiKey,
-            'model' => $modelString,
+            'model' => is_array($model) ? $model[0] : $model,
         ];
     }
 
     /**
+     * Parses the messages parameter from POST request
+     * Handles both array and JSON string formats
+     */
+    private function parseMessagesParam($messages): array
+    {
+        // First check $_POST directly
+        if (isset($_POST['messages']) && !empty($_POST['messages'])) {
+            $postMessages = $_POST['messages'];
+            if (is_string($postMessages)) {
+                $decoded = json_decode($postMessages, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    return $decoded;
+                }
+            } elseif (is_array($postMessages)) {
+                return $postMessages;
+            }
+        }
+
+        // Fallback to Common::getRequestVar
+        if (empty($messages) || !is_array($messages)) {
+            $postMessages = Common::getRequestVar('messages', '', 'string', $_POST);
+            if (!empty($postMessages)) {
+                if (is_string($postMessages)) {
+                    $decoded = json_decode($postMessages, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        return $decoded;
+                    }
+                } elseif (is_array($postMessages)) {
+                    return $postMessages;
+                }
+            }
+        }
+
+        // If messages is a JSON string, decode it
+        if (is_string($messages)) {
+            $decoded = json_decode($messages, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+            return [];
+        }
+
+        return is_array($messages) ? $messages : [];
+    }
+
+    /**
+     * Parses the widgetParams parameter from POST request
+     * Handles both array and JSON string formats
+     */
+    private function parseWidgetParams($widgetParams): array
+    {
+        // First check $_POST directly
+        if (isset($_POST['widgetParams']) && !empty($_POST['widgetParams'])) {
+            $postParams = $_POST['widgetParams'];
+            if (is_string($postParams)) {
+                $decoded = json_decode($postParams, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    return $decoded;
+                }
+            } elseif (is_array($postParams)) {
+                return $postParams;
+            }
+        }
+
+        // Fallback to Common::getRequestVar
+        if (empty($widgetParams) || !is_array($widgetParams)) {
+            $postParams = Common::getRequestVar('widgetParams', '', 'string', $_POST);
+            if (!empty($postParams)) {
+                if (is_string($postParams)) {
+                    $decoded = json_decode($postParams, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        return $decoded;
+                    }
+                } elseif (is_array($postParams)) {
+                    return $postParams;
+                }
+            }
+        }
+
+        // If widgetParams is a JSON string, decode it
+        if (is_string($widgetParams)) {
+            $decoded = json_decode($widgetParams, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+            return [];
+        }
+
+        return is_array($widgetParams) ? $widgetParams : [];
+    }
+
+    /**
      * Sanitizes conversation messages to prevent injection
+     * Note: Mistral API only accepts 'role' and 'content' fields, no 'name' field
      */
     private function sanitizeConversation(array $conversation): array
     {
@@ -704,6 +648,7 @@ class API extends \Piwik\Plugin\API
                 continue;
             }
 
+            // Mistral API only accepts role and content - no name field
             $sanitizedMessage = [
                 'role' => $role,
                 'content' => (string) ($message['content'] ?? ''),
@@ -713,58 +658,5 @@ class API extends \Piwik\Plugin\API
         }
 
         return $sanitized;
-    }
-
-    /**
-     * Returns plugin settings for the frontend
-     */
-    public function getSettings(): array
-    {
-        Piwik::checkUserHasSomeViewAccess();
-
-        $systemSettings = new SystemSettings();
-
-        return [
-            'enableStreaming' => (bool) $systemSettings->enableStreaming->getValue(),
-        ];
-    }
-
-    /**
-     * Returns current rate limit status for the user
-     */
-    public function getRateLimitStatus(int $idSite): array
-    {
-        Piwik::checkUserHasSomeViewAccess();
-
-        $userLogin = Piwik::getCurrentUserLogin();
-        $rateLimitKey = 'MistralAI_ratelimit_' . $idSite . '_' . $userLogin;
-
-        $rateData = Option::get($rateLimitKey);
-        $currentTime = time();
-
-        if ($rateData) {
-            $rateData = json_decode($rateData, true);
-            $windowStart = $rateData['window_start'] ?? 0;
-            $requestCount = $rateData['count'] ?? 0;
-
-            if ($currentTime - $windowStart > self::RATE_LIMIT_WINDOW) {
-                $requestCount = 0;
-                $windowStart = $currentTime;
-            }
-
-            return [
-                'requests_used' => $requestCount,
-                'requests_limit' => self::RATE_LIMIT_REQUESTS,
-                'requests_remaining' => max(0, self::RATE_LIMIT_REQUESTS - $requestCount),
-                'reset_in_seconds' => max(0, $windowStart + self::RATE_LIMIT_WINDOW - $currentTime),
-            ];
-        }
-
-        return [
-            'requests_used' => 0,
-            'requests_limit' => self::RATE_LIMIT_REQUESTS,
-            'requests_remaining' => self::RATE_LIMIT_REQUESTS,
-            'reset_in_seconds' => self::RATE_LIMIT_WINDOW,
-        ];
     }
 }

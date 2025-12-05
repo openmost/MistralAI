@@ -10,7 +10,6 @@ namespace Piwik\Plugins\MistralAI;
 
 class MistralAI extends \Piwik\Plugin
 {
-
     public function registerEvents()
     {
         return array(
@@ -50,13 +49,36 @@ class MistralAI extends \Piwik\Plugin
         }
     }
 
-    private function pluginIsConfigured()
+    private function pluginIsConfigured(): bool
     {
-        $settings = new \Piwik\Plugins\MistralAI\SystemSettings();
-        $host = $settings->host->getValue();
-        $apiKey = $settings->apiKey->getValue();
-        $model = $settings->model->getValue();
+        try {
+            $settings = new SystemSettings();
 
-        return $host && $apiKey && $model;
+            // Check if settings properties exist and are properly initialized
+            if (!isset($settings->host) || $settings->host === null) {
+                return false;
+            }
+            if (!isset($settings->apiKey) || $settings->apiKey === null) {
+                return false;
+            }
+
+            $host = $settings->host->getValue();
+            $apiKey = $settings->apiKey->getValue();
+
+            if (empty($host)) {
+                return false;
+            }
+
+            // Custom host doesn't require API key
+            $isCustomHost = $host !== Config::DEFAULT_HOST;
+            if (!$isCustomHost && empty($apiKey)) {
+                return false;
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            // Catch any error during plugin installation/initialization
+            return false;
+        }
     }
 }

@@ -1,10 +1,10 @@
 {
     "name": "MistralAI",
-    "description": "Mistral AI support for Matomo",
-    "version": "5.8.1",
+    "description": "MistralAI support for Matomo",
+    "version": "5.9.0",
     "theme": false,
     "require": {
-        "matomo": ">=5.0.0-b1,<6.0.0-b1"
+        "matomo": ">=5.0.0,<6.0.0-b1"
     },
     "authors": [
         {
@@ -13,22 +13,22 @@
             "homepage": "https:\/\/openmost.io"
         }
     ],
-    "support": {
-        "email": "ronan@openmost.io",
-        "issues": "https:\/\/github.com\/openmost\/MistralAI\/issues",
-        "source": "https:\/\/github.com\/openmost\/MistralAI"
-    },
-    "homepage": "https://openmost.io/products/mistral-ai/",
+  "support": {
+    "email": "ronan@openmost.io",
+    "issues": "https:\/\/github.com\/openmost\/MistralAI\/issues",
+    "source": "https:\/\/github.com\/openmost\/MistralAI"
+  },
+  "homepage": "https://openmost.io/products/mistral-ai/",
     "license": "GPL v3+",
     "keywords": [
-        "mistral",
-        "ai",
-        "mistralai",
-        "chat",
-        "assistant",
-        "assistants",
-        "insight",
-        "insights"
+      "mistral",
+      "ai",
+      "mistralai",
+      "chat",
+      "assistant",
+      "assistants",
+      "insight",
+      "insights"
     ],
     "category": "integration"
 }

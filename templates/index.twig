@@ -2,11 +2,11 @@
 
 {% block content %}
 
-    {% if(api_key) %}
+    {% if is_configured %}
 
         <div vue-entry="MistralAI.ChatIndexPage"
              ai-name="mistral-ai"
-             ai-label="Mistral AI"
+             ai-label="MistralAI"
              ai-color="#fd6f00"
              api-method="MistralAI.getResponse"
         ></div>
@@ -14,7 +14,8 @@
     {% else %}
 
         <div class="alert alert-info">
-            <strong>API Key is missing!</strong> You need to set your API Key in the general settings as a superuser.
+            <strong>{{ 'MistralAI_PluginNotConfigured'|translate }}</strong>
+            {{ 'MistralAI_PluginNotConfiguredDescription'|translate }}
         </div>
 
     {% endif %}

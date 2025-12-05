@@ -12,7 +12,7 @@ window.addEventListener('widget:loaded', function (e) {
   insightTrigger.setAttribute('vue-entry', 'MistralAI.InsightTrigger');
   insightTrigger.setAttribute('widget-params', JSON.stringify(parameters));
   insightTrigger.setAttribute('ai-name', 'mistral-ai');
-  insightTrigger.setAttribute('ai-label', 'Mistral AI');
+  insightTrigger.setAttribute('ai-label', 'MistralAI');
   insightTrigger.setAttribute('ai-color', '#fd6f00');
   insightTrigger.setAttribute('api-method', 'MistralAI.getInsights');
   titleWrapper.append(insightTrigger);

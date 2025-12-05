@@ -1,34 +1,104 @@
 ## FAQ
 
-__How to install this plugin__
+__How do I install this plugin?__
 
-This plugin is available in the official marketplace of Matomo. You have to install the same way as other plugins
+This plugin is available in the official Matomo Marketplace:
 
-- Go to the administration panel
-- Look for the Marketplace section and select "Plugins" in the dropdown
-- Then search for "**MistralAI**", install and activate the plugin.
-- Follow the documentation to install the API fetch method to get the data you want.
+1. Go to the Administration panel
+2. Navigate to the Marketplace section and select "Plugins"
+3. Search for "**MistralAI**"
+4. Install and activate the plugin
+5. Configure your API settings in **Administration > General Settings > MistralAI**
 
-__Is the plugin active for all Matomo users in my instance ?__
-
-Yes, if you choose this plugin for your Matomo instance, all users will be able to use it.
-
-__How can I contribute to this plugin ?__
-
-You can help me develop this plugin by contacting me. You can also create the project and request an integration. Any way you consider legitimate to contribute is welcome.
-
-__How long this plugin will be maintained ?__
-
-As long as possible, I have many project to maintain, I'm the first user of this plugin and I use Matomo on many project, if I see errors, I'll patch this plugin faster as possible !
-
-__What does this plugin do?__
-
-It just uses the Mistral AI API in order to answer some prompts.
+Alternatively, download the plugin from GitHub and extract it to your `/plugins` folder.
 
 __What do I need to make it work?__
 
-You need to have a Mistral AI API key, you will find it at https://console.mistral.ai/.
+You need an MistralAI API key, which you can obtain at https://docs.mistral.ai/api. If you're using a custom host (like a self-hosted LLM), an API key may be optional.
 
-__Can I define the temperature and the token limit?__
+__Can I use models other than MistralAI's?__
 
-Not yet, but feel free to edit the source code to your wishes, it is released under the GPLv3 license.
+Yes! The plugin supports any MistralAI-compatible API endpoint. You can connect to:
+
+- Azure MistralAI
+- Self-hosted solutions (Ollama, LocalAI, vLLM)
+- Other providers (Mistral, Anthropic via proxy, etc.)
+
+Simply configure the custom host URL in the plugin settings.
+
+__Which models are supported?__
+
+The plugin includes presets for:
+
+- Mistral Large
+- Mistral Medium
+- Mistral Small
+- Open Mistral Nemo
+- Codestral
+- Pixtral Large
+- Ministral 8B
+- Ministral 3B
+
+You can also specify any custom model name for models not in the preset list.
+
+__Is the plugin available to all users in my Matomo instance?__
+
+Yes, once activated, all users with view permissions can access the AI features for their permitted sites.
+
+__Can I configure different settings per website?__
+
+Yes! Use Measurable Settings to override the system-wide host, API key, model, and prompts for specific websites. Leave fields empty to use system defaults.
+
+__How do I get insights for a report?__
+
+1. Navigate to any report in Matomo
+2. Click the "Insights" button (AI icon) in the report header
+3. View AI-generated insights in the side panel
+4. Ask follow-up questions to dive deeper into the data
+
+__Does the plugin support streaming responses?__
+
+Yes, real-time streaming responses are supported. The plugin automatically falls back to non-streaming mode if your server doesn't support Server-Sent Events (SSE).
+
+__Can I customize the AI's behavior?__
+
+Yes, you can customize:
+
+- **Chat Base Prompt**: Controls how the AI responds in chat conversations
+- **Insight Base Prompt**: Controls how the AI analyzes report data
+
+These can be set globally or per website.
+
+__What languages are supported?__
+
+The plugin interface is translated into:
+
+- English
+- German (Deutsch)
+- Spanish (Español)
+- French (Français)
+- Italian (Italiano)
+- Dutch (Nederlands)
+- Swedish (Svenska)
+
+__What are the requirements?__
+
+- Matomo 5.0.0 or higher
+- PHP 7.4 or higher
+- Valid API key (for MistralAI) or accessible custom host
+
+__Is my data sent to MistralAI?__
+
+When you use the Insights feature or Chat, the relevant report data and your messages are sent to the configured API endpoint (MistralAI by default). If you have data privacy concerns, consider using a self-hosted LLM solution.
+
+__How can I contribute to this plugin?__
+
+You can contribute by:
+
+- Reporting issues on [GitHub](https://github.com/openmost/MistralAI/issues)
+- Forking the project and submitting pull requests
+- Contacting the developer at ronan@openmost.io
+
+__How long will this plugin be maintained?__
+
+The plugin is actively maintained. The developer uses Matomo on many projects and will continue to patch and improve the plugin.
