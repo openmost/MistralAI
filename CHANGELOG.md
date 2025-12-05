@@ -1,5 +1,9 @@
 ## Changelog
 
+### 5.9.1
+
+- Fix upgrade scenario issue (only when upgrade from v5.8.0)
+
 ### 5.9.0
 
 **Major Update: Settings Refactoring, Streaming & UI Improvements**

@@ -55,10 +55,10 @@ class MistralAI extends \Piwik\Plugin
             $settings = new SystemSettings();
 
             // Check if settings properties exist and are properly initialized
-            if (!isset($settings->host) || $settings->host === null) {
+            if (!$settings->host instanceof \Piwik\Settings\Setting) {
                 return false;
             }
-            if (!isset($settings->apiKey) || $settings->apiKey === null) {
+            if (!$settings->apiKey instanceof \Piwik\Settings\Setting) {
                 return false;
             }
 
