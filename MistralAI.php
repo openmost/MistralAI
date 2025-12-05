@@ -51,14 +51,28 @@ class MistralAI extends \Piwik\Plugin
 
     private function pluginIsConfigured(): bool
     {
+        // During plugin install/update, settings may not be available
+        // Return false gracefully to avoid breaking the update process
         try {
-            $settings = new SystemSettings();
-
-            // Check if settings properties exist and are properly initialized
-            if (!$settings->host instanceof \Piwik\Settings\Setting) {
+            // Check if SystemSettings class exists and can be instantiated
+            if (!class_exists('\\Piwik\\Plugins\\MistralAI\\SystemSettings')) {
                 return false;
             }
-            if (!$settings->apiKey instanceof \Piwik\Settings\Setting) {
+
+            $settings = new SystemSettings();
+
+            // Check if settings object is valid and properties are initialized
+            if (!is_object($settings)) {
+                return false;
+            }
+
+            // Check if host property exists and is a Setting instance
+            if (!isset($settings->host) || !$settings->host instanceof \Piwik\Settings\Setting) {
+                return false;
+            }
+
+            // Check if apiKey property exists and is a Setting instance
+            if (!isset($settings->apiKey) || !$settings->apiKey instanceof \Piwik\Settings\Setting) {
                 return false;
             }
 
@@ -77,7 +91,7 @@ class MistralAI extends \Piwik\Plugin
 
             return true;
         } catch (\Throwable $e) {
-            // Catch any error during plugin installation/initialization
+            // Catch any error during plugin installation/update/initialization
             return false;
         }
     }
