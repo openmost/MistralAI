@@ -1,6 +1,6 @@
 ## Changelog
 
-### 5.9.2
+### 5.9.3
 
 - Fix upgrade scenario issue (only when upgrade from v5.8.0)
 

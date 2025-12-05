@@ -27,6 +27,9 @@ class MeasurableSettings extends \Piwik\Settings\Measurable\MeasurableSettings
     public $chatBasePrompt;
     public $insightBasePrompt;
 
+    /** @var Setting|null @deprecated Legacy property for backwards compatibility during updates */
+    public $model;
+
     protected function init()
     {
         $this->host = $this->makeSetting('host', '', FieldConfig::TYPE_STRING, function (FieldConfig $field) {

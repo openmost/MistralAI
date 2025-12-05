@@ -28,6 +28,9 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
     public $chatBasePrompt;
     public $insightBasePrompt;
 
+    /** @var Setting|null @deprecated Legacy property for backwards compatibility during updates */
+    public $model;
+
     protected function init()
     {
         $this->host = $this->makeSetting('host', Config::DEFAULT_HOST, FieldConfig::TYPE_STRING, function (FieldConfig $field) {

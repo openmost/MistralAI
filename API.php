@@ -496,19 +496,18 @@ class API extends \Piwik\Plugin\API
         $systemSettings = new SystemSettings();
         $measurableSettings = new MeasurableSettings($idSite);
 
-        // Safely get values with null checks
-        $host = $this->getSettingValue($measurableSettings->host) ?: $this->getSettingValue($systemSettings->host);
-        $apiKey = $this->getSettingValue($measurableSettings->apiKey) ?: $this->getSettingValue($systemSettings->apiKey);
+        $host = $measurableSettings->host->getValue() ?: $systemSettings->host->getValue();
+        $apiKey = $measurableSettings->apiKey->getValue() ?: $systemSettings->apiKey->getValue();
 
         // Get model: prefer custom model if set, otherwise use preset
-        $model = $this->getSettingValue($systemSettings->modelCustom);
+        $model = $systemSettings->modelCustom->getValue();
         if (empty($model)) {
-            $model = $this->getSettingValue($systemSettings->modelPreset);
+            $model = $systemSettings->modelPreset->getValue();
         }
 
         // Check measurable settings override
-        $measurableModelCustom = $this->getSettingValue($measurableSettings->modelCustom);
-        $measurableModelPreset = $this->getSettingValue($measurableSettings->modelPreset);
+        $measurableModelCustom = $measurableSettings->modelCustom->getValue();
+        $measurableModelPreset = $measurableSettings->modelPreset->getValue();
         if (!empty($measurableModelCustom)) {
             $model = $measurableModelCustom;
         } elseif (!empty($measurableModelPreset)) {
@@ -536,17 +535,6 @@ class API extends \Piwik\Plugin\API
             'apiKey' => $apiKey,
             'model' => is_array($model) ? $model[0] : $model,
         ];
-    }
-
-    /**
-     * Safely gets a setting value, returning null if the setting is not initialized
-     */
-    private function getSettingValue($setting)
-    {
-        if ($setting instanceof \Piwik\Settings\Setting) {
-            return $setting->getValue();
-        }
-        return null;
     }
 
     /**
