@@ -28,18 +28,17 @@ Simply configure the custom host URL in the plugin settings.
 
 __Which models are supported?__
 
-The plugin includes presets for:
+The plugin includes presets curated for back-and-forth chat:
 
-- Mistral Large
-- Mistral Medium
-- Mistral Small
-- Open Mistral Nemo
-- Codestral
-- Pixtral Large
-- Ministral 8B
-- Ministral 3B
+- Mistral Large 3 (`mistral-large-latest`)
+- Mistral Medium 3.5 (`mistral-medium-latest`) — default
+- Mistral Small 4 (`mistral-small-latest`)
+- Magistral Medium 1.2 (`magistral-medium-latest`) — reasoning
+- Ministral 8B (`ministral-8b-latest`)
+- Ministral 3B (`ministral-3b-latest`)
+- Open Mistral Nemo (`open-mistral-nemo`) — legacy multilingual
 
-You can also specify any custom model name for models not in the preset list.
+Code-completion specialists (Codestral, Devstral), audio (Voxtral) and vision-only models (Pixtral) were intentionally left out of the dropdown because they are tuned for one-shot tasks rather than conversation. You can still use them — or any other model — through the **Model (Custom)** field.
 
 __Is the plugin available to all users in my Matomo instance?__
 

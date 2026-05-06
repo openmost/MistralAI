@@ -20,21 +20,21 @@ A full-featured chat interface for asking questions about your analytics data.
 ### Flexible Model Configuration
 Choose from preset models or specify custom model names.
 
-**Preset Models:**
-- Mistral Large
-- Mistral Medium
-- Mistral Small
-- Open Mistral Nemo
-- Codestral
-- Pixtral Large
+**Preset Models** (curated for chat — code-completion, audio and vision-only specialists are excluded):
+- Mistral Large 3
+- Mistral Medium 3.5 *(default)*
+- Mistral Small 4
+- Magistral Medium 1.2 *(reasoning)*
 - Ministral 8B
 - Ministral 3B
+- Open Mistral Nemo *(legacy multilingual)*
 
 **Custom Models:**
 Specify any model name to use models not in the preset list, perfect for:
-- New Mistral models
-- Self-hosted LLMs (LLaMA, Mistral, etc.)
-- Other MistralAI-compatible providers
+- Newer Mistral releases not yet in the preset
+- Code/audio/vision specialists (Codestral, Devstral, Voxtral, Pixtral, …)
+- Self-hosted LLMs (Mistral, LLaMA, etc.)
+- Other Mistral-compatible providers
 
 ### Multi-Site Configuration
 Configure different AI settings per website using Measurable Settings:
@@ -79,7 +79,7 @@ Full translations available in:
 
 | Setting | Description |
 |---------|-------------|
-| **Host** | API endpoint URL. Default: `https://api.openai.com/v1/chat/completions` |
+| **Host** | API endpoint URL. Default: `https://api.mistral.ai/v1/chat/completions` |
 | **API Key** | Your MistralAI API key (required for MistralAI, optional for custom hosts) |
 | **Model (Preset)** | Select from available model presets |
 | **Model (Custom)** | Override preset with a custom model name |

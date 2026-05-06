@@ -18,19 +18,30 @@ class Config
     public const DEFAULT_MODEL = 'mistral-medium-latest';
 
     /**
-     * Returns the list of available preset models
+     * Returns the list of available preset models suited for chat/conversation.
+     *
+     * The list only contains models tuned for back-and-forth discussion of
+     * report data. Code-completion specialists (Codestral, Devstral), audio
+     * (Voxtral) and vision-only models (Pixtral) are intentionally excluded
+     * because they target one-shot tasks rather than conversation.
      */
     public static function getAvailableModels(): array
     {
         return [
-            'mistral-large-latest' => 'Mistral Large',
-            'mistral-medium-latest' => 'Mistral Medium',
-            'mistral-small-latest' => 'Mistral Small',
-            'open-mistral-nemo' => 'Open Mistral Nemo',
-            'codestral-latest' => 'Codestral',
-            'pixtral-large-latest' => 'Pixtral Large',
+            // Frontier generalist (latest)
+            'mistral-large-latest' => 'Mistral Large 3',
+            'mistral-medium-latest' => 'Mistral Medium 3.5',
+            'mistral-small-latest' => 'Mistral Small 4',
+
+            // Reasoning
+            'magistral-medium-latest' => 'Magistral Medium 1.2',
+
+            // Ministral series (edge / lightweight chat)
             'ministral-8b-latest' => 'Ministral 8B',
             'ministral-3b-latest' => 'Ministral 3B',
+
+            // Legacy
+            'open-mistral-nemo' => 'Open Mistral Nemo',
         ];
     }
 }

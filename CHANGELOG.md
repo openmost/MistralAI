@@ -1,5 +1,17 @@
 ## Changelog
 
+### 5.10.0
+
+**Refreshed model list and dark theme support**
+
+#### New Features
+- **Refreshed preset model list**: Added the latest generations — Mistral Large 3, Mistral Medium 3.5, Mistral Small 4 — plus the new Magistral reasoning model (`magistral-medium-latest`). Default model is still `mistral-medium-latest`, which now points to Mistral Medium 3.5.
+- **Curated for chat**: The preset list now only contains models suited for back-and-forth discussion of report data. Code-completion specialists (Codestral, Devstral), audio models (Voxtral) and vision-only models (Pixtral) have been removed because they target one-shot tasks rather than conversation.
+- **Dark theme support**: All chat and insight components use Matomo's native CSS theme variables (`--theme-color-background-contrast`, `--theme-color-border`, `--theme-color-background-tinyContrast`), so the UI automatically follows Matomo's light/dark theme without any extra configuration. Fallback values are preserved for Matomo < 5.10.
+
+#### Notes for Custom Models
+The "Model (Custom)" field still accepts any model name, including code/audio/vision specialists or self-hosted ones (Codestral, Devstral, Voxtral, Pixtral, etc.). Use it whenever you need a model that is no longer in the preset dropdown.
+
 ### 5.9.3
 
 - Fix upgrade scenario issue (only when upgrade from v5.8.0)

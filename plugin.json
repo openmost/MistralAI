@@ -1,7 +1,7 @@
 {
     "name": "MistralAI",
     "description": "MistralAI support for Matomo",
-    "version": "5.9.3",
+    "version": "5.10.0",
     "theme": false,
     "require": {
         "matomo": ">=5.0.0,<6.0.0-b1"
