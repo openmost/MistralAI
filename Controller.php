@@ -8,8 +8,8 @@
 
 namespace Piwik\Plugins\MistralAI;
 
-use Piwik\Common;
 use Piwik\Piwik;
+use Piwik\Request;
 
 class Controller extends \Piwik\Plugin\Controller
 {
@@ -17,7 +17,7 @@ class Controller extends \Piwik\Plugin\Controller
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        $idSite = Common::getRequestVar('idSite');
+        $idSite = Request::fromRequest()->getIntegerParameter('idSite');
         $systemSettings = new SystemSettings();
         $measurableSettings = new MeasurableSettings($idSite);
 

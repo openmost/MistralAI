@@ -54,6 +54,14 @@ class MistralAI extends \Piwik\Plugin
         try {
             $settings = new SystemSettings();
 
+            // Check if settings properties exist and are properly initialized
+            if (!isset($settings->host) || $settings->host === null) {
+                return false;
+            }
+            if (!isset($settings->apiKey) || $settings->apiKey === null) {
+                return false;
+            }
+
             $host = $settings->host->getValue();
             $apiKey = $settings->apiKey->getValue();
 
@@ -69,6 +77,7 @@ class MistralAI extends \Piwik\Plugin
 
             return true;
         } catch (\Throwable $e) {
+            // Catch any error during plugin installation/initialization
             return false;
         }
     }

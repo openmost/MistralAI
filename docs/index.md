@@ -1,6 +1,6 @@
 ## Documentation
 
-Integrate AI-powered analytics insights and chat functionality into your Matomo instance using MistralAI or any MistralAI-compatible API.
+Integrate AI-powered analytics insights and chat functionality into your Matomo instance using Mistral AI or any OpenAI-compatible API.
 
 ## Features
 
@@ -18,6 +18,7 @@ A full-featured chat interface for asking questions about your analytics data.
 
 - Accessible from the main menu under "MistralAI"
 - Real-time streaming responses (with automatic fallback for unsupported servers)
+- Errors returned by the model API are displayed as a notice directly in the chat, so misconfiguration is easy to spot
 
 ### Flexible Model Configuration
 
@@ -33,15 +34,22 @@ Choose from preset models or specify custom model names:
 - Open Mistral Nemo *(legacy multilingual)*
 
 **Custom Models:**
-Specify any model name to use models not in the preset list, perfect for newer Mistral releases, code/audio/vision specialists (Codestral, Devstral, Voxtral, Pixtral, …), self-hosted LLMs, or other Mistral-compatible providers.
+Specify any model name to use models not in the preset list, perfect for newer Mistral releases, code/audio/vision specialists (Codestral, Devstral, Voxtral, Pixtral, …), self-hosted LLMs, or other OpenAI-compatible providers. If a custom model is rejected by the configured endpoint, the upstream error message will be shown in the chat.
 
 ### Custom Host Support
 
-Connect to any MistralAI-compatible API endpoint:
-- MistralAI (default)
-- Azure MistralAI
-- Self-hosted solutions (Ollama, LocalAI, vLLM, etc.)
-- Other providers (Anthropic via proxy, Mistral, etc.)
+Connect to any OpenAI-compatible chat completions endpoint:
+- Mistral AI (default)
+- Self-hosted Mistral models (vLLM, Ollama, LocalAI, etc.)
+- Other OpenAI-compatible providers
+
+### Dark Theme Support
+
+The chat and insight components use Matomo's native CSS theme variables, so the UI automatically follows your Matomo theme — both light and dark — without any additional configuration.
+
+### Safe Answers
+
+AI answers are sanitized before being displayed, so content coming from your reports (page titles, referrers...) cannot inject scripts or unsafe links in Matomo.
 
 ## Installation
 
@@ -67,7 +75,7 @@ Navigate to **Administration > General Settings > MistralAI** to configure:
 | Setting | Description |
 |---------|-------------|
 | **Host** | API endpoint URL. Default: `https://api.mistral.ai/v1/chat/completions` |
-| **API Key** | Your MistralAI API key (required for MistralAI, optional for custom hosts) |
+| **API Key** | Your Mistral AI API key (required for Mistral AI, optional for custom hosts) |
 | **Model (Preset)** | Select from available model presets |
 | **Model (Custom)** | Override preset with a custom model name |
 | **Chat Base Prompt** | System prompt for chat conversations |
@@ -87,7 +95,7 @@ This is useful for:
 ### Getting Report Insights
 
 1. Navigate to any report in Matomo
-2. Click the "Insights" button (sparkle icon) in the report header
+2. Click the "Insights" button (Mistral icon) in the report header
 3. View AI-generated insights in the side panel
 4. Ask follow-up questions to dive deeper into the data
 
@@ -106,8 +114,7 @@ The plugin provides the following API methods:
 |--------|-------------|
 | `MistralAI.getResponse` | Get AI response for messages (non-streaming) |
 | `MistralAI.getStreamingResponse` | Get AI response with SSE streaming |
-| `MistralAI.getInsight` | Get AI insights for report data |
-| `MistralAI.getModels` | Get list of available preset models |
+| `MistralAI.getInsights` | Get AI insights for report data |
 
 ### Parameters
 
@@ -115,13 +122,13 @@ The plugin provides the following API methods:
 - `idSite` - Site ID
 - `period` - Period (day, week, month, year)
 - `date` - Date string
-- `messages` - Conversation messages in MistralAI format
+- `messages` - Conversation messages in chat completions format
 
-**MistralAI.getInsight**
+**MistralAI.getInsights**
 - `idSite` - Site ID
 - `period` - Period
 - `date` - Date string
-- `reportId` - Report identifier
+- `widgetParams` - Parameters of the report widget (module, action, idGoal, segment...)
 - `messages` - Conversation messages
 
 All API methods require appropriate view permissions for the requested site.
@@ -139,12 +146,12 @@ The plugin interface is available in:
 
 ## Requirements
 
-- Matomo 5.0.0 or higher
-- PHP 7.4 or higher
-- Valid API key (for MistralAI) or accessible custom host
+- Matomo 6.0.0 or higher
+- PHP 8.1 or higher
+- Valid API key (for Mistral AI) or accessible custom host
 
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/openmost/MistralAI/issues)
-- **Documentation**: [Plugin Homepage](https://openmost.io/products/mistral-ai)
-- **Email**: ronan@openmost.io
+- **Documentation**: [Plugin Homepage](https://openmost.com/matomo/extensions/mistral-ai)
+- **Email**: ronan@openmost.com

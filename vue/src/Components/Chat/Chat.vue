@@ -9,7 +9,11 @@
       :ai-color="aiColor"
       :streaming="streaming"
     />
-    <ChatForm :loading="loading || streaming" :ai-label="aiLabel" @prompt="onSubmit"/>
+    <ChatForm
+      :loading="loading || streaming"
+      :ai-label="aiLabel"
+      @prompt="onSubmit"
+    />
   </div>
 </template>
 
@@ -18,20 +22,14 @@ import { defineComponent } from 'vue';
 import { AjaxHelper, MatomoUrl } from 'CoreHome';
 import ChatForm from './ChatForm.vue';
 import ChatMessagesList from './ChatMessagesList.vue';
+import { ApiResponse, Message } from '../../types';
 
-interface Message {
-  role: string;
-  content: string;
-}
-
-interface StreamChoice {
-  delta?: { role?: string; content?: string };
-  message?: { role?: string; content?: string };
-}
-
-interface ApiResponse {
-  choices?: StreamChoice[];
-  error?: { message: string };
+function getContextParams(): Record<string, string> {
+  return {
+    idSite: String(MatomoUrl.parsed.value.idSite || ''),
+    period: String(MatomoUrl.parsed.value.period || 'day'),
+    date: String(MatomoUrl.parsed.value.date || 'today'),
+  };
 }
 
 export default defineComponent({
@@ -84,6 +82,10 @@ export default defineComponent({
       }
     },
 
+    getConversationPayload(): string {
+      return JSON.stringify(this.messages.map(({ role, content }) => ({ role, content })));
+    },
+
     async fetchStreaming() {
       this.streaming = false;
       this.streamingContent = '';
@@ -99,9 +101,7 @@ export default defineComponent({
           method: this.streamingApiMethod,
           format: 'original',
           force_api_session: '1',
-          idSite: String(MatomoUrl.parsed.value.idSite || ''),
-          period: String(MatomoUrl.parsed.value.period || 'day'),
-          date: String(MatomoUrl.parsed.value.date || 'today'),
+          ...getContextParams(),
         });
 
         const tokenAuth = this.getTokenAuth();
@@ -110,7 +110,7 @@ export default defineComponent({
         }
 
         const postBody = new URLSearchParams({
-          messages: JSON.stringify(this.messages),
+          messages: this.getConversationPayload(),
           widgetParams: JSON.stringify(this.widgetParams),
         });
 
@@ -136,16 +136,12 @@ export default defineComponent({
         if (this.streamingContent) {
           this.messages.push({ role: 'assistant', content: this.streamingContent });
         } else if (!this.errored) {
-          // Stream completed but no content received - fall back to non-streaming
-          console.warn('MistralAI: Streaming completed but no content received, falling back to non-streaming');
+          // some Mistral compatible hosts close the stream without content: retry without streaming
           this.streamingSupported = false;
           this.fetchNonStreaming();
-          return;
         }
       } catch (error) {
         if ((error as Error).name === 'AbortError') return;
-
-        console.error('MistralAI: Streaming error:', error);
 
         if (!this.streamingContent && this.streamingSupported) {
           this.streamingSupported = false;
@@ -155,10 +151,12 @@ export default defineComponent({
         }
         this.handleError(error instanceof Error ? error.message : String(error));
       } finally {
-        this.loading = false;
         this.streaming = false;
         this.streamingContent = '';
         this.abortController = null;
+        if (this.streamingSupported) {
+          this.loading = false;
+        }
       }
     },
 
@@ -215,17 +213,18 @@ export default defineComponent({
           }
           this.streamingContent += content;
         }
-      } catch (e) {
-        // Log parse errors for debugging but don't fail
-        console.warn('MistralAI: Failed to parse stream data:', data, e);
+      } catch {
+        // Skip non-JSON lines
       }
     },
 
     fetchNonStreaming() {
+      this.loading = true;
+
       AjaxHelper
         .fetch({ method: this.apiMethod }, {
           postParams: {
-            messages: this.messages,
+            messages: this.messages.map(({ role, content }) => ({ role, content })),
             widgetParams: this.widgetParams,
           },
         })
@@ -257,6 +256,8 @@ export default defineComponent({
     handleError(error: string) {
       this.errored = true;
       this.errorMessage = error;
+      this.loading = false;
+      this.streaming = false;
     },
 
     cancelRequest() {

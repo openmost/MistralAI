@@ -1,5 +1,30 @@
 ## Changelog
 
+### 6.0.0
+
+**Matomo 6 compatibility**
+
+- Compatibility with Matomo 6.x (`>=6.0.0-b1,<7.0.0-b1`), requires PHP 8.1+.
+- Vue components now built with the Matomo 6 Vite build. The markdown renderer is bundled with the plugin.
+- Support email and plugin homepage moved to openmost.com.
+
+**Security**
+
+- AI answers are now sanitized with DOMPurify before being displayed, which fixes links that could run JavaScript when clicked (for example through data coming from report labels).
+- Insights no longer send an API error (for example a missing access to the website) to the AI model as if it was the report data: the error is displayed in the chat.
+
+**Chat improvements**
+
+- Errors returned by the model API while streaming (invalid model, quota, authentication...) are now displayed as a notice in the chat instead of failing silently, including the Mistral error format.
+- The conversation automatically scrolls to the latest message while the answer is written, unless you scroll up to read previous messages.
+- The last message is no longer hidden under the message input on the MistralAI page.
+- The page no longer scrolls behind the open Insights panel, and message bubbles no longer have their own scrollbar.
+- Accessibility improvements: labelled chat input, explicit button types.
+
+**Quality**
+
+- Add unit, integration and Vue tests, run on GitHub Actions.
+
 ### 5.10.0
 
 **Refreshed model list and dark theme support**
