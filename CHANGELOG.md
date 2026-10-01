@@ -1,5 +1,9 @@
 ## Changelog
 
+### 6.0.1
+
+- Security: restrict insight requests to Matomo reports.
+
 ### 6.0.0
 
 **Matomo 6 compatibility**
