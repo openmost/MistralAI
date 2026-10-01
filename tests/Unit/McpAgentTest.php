@@ -382,6 +382,18 @@ class McpAgentTest extends TestCase
         $this->assertSame([['error', ['message' => 'Connection error: Could not resolve host']]], $this->events);
     }
 
+    public function test_run_sendsNoKey_toAKeylessCustomHost(): void
+    {
+        $this->agent->settings = ScriptedMcpAgent::settings([], ['host' => 'https://llm.example.com/v1/chat/completions', 'apiKey' => '']);
+        $this->agent->httpResponses = [ScriptedMcpAgent::completion(['content' => 'Answer'])];
+
+        $this->runAgent([['role' => 'user', 'content' => 'Hi']]);
+
+        $this->assertSame([['text', ['content' => 'Answer']]], $this->events);
+        $this->assertSame('https://llm.example.com/v1/chat/completions', $this->agent->httpRequests[0]['host']);
+        $this->assertSame('', $this->agent->httpRequests[0]['apiKey']);
+    }
+
     public function test_run_refusesAHostWithoutHttps(): void
     {
         $this->agent->settings = ScriptedMcpAgent::settings([], ['host' => 'http://llm.example.com/v1/chat/completions']);
@@ -484,6 +496,26 @@ class McpAgentTest extends TestCase
         $this->assertSame(McpAgent::MODE_AGENT, $status['mode']);
         $this->assertFalse($status['canPerformActions']);
         $this->assertSame([Recommendations::ENABLE_WRITE_MODE], $this->getRecommendationIds($status));
+    }
+
+    public function test_getStatus_isAgentMode_withAKeylessCustomHost(): void
+    {
+        $this->agent->settings = ScriptedMcpAgent::settings([], ['host' => 'https://llm.example.com/v1/chat/completions', 'apiKey' => '']);
+
+        $status = $this->agent->getStatus(1);
+
+        $this->assertSame(McpAgent::MODE_AGENT, $status['mode']);
+        $this->assertSame(EffectiveSettings::SOURCE_SYSTEM, $status['keySource']);
+    }
+
+    public function test_getStatus_isChatMode_withAKeylessDefaultHost(): void
+    {
+        $this->agent->settings = ScriptedMcpAgent::settings([], ['apiKey' => '']);
+
+        $status = $this->agent->getStatus(1);
+
+        $this->assertSame(McpAgent::MODE_CHAT, $status['mode']);
+        $this->assertSame(EffectiveSettings::SOURCE_NONE, $status['keySource']);
     }
 
     public function test_getStatus_isAgentMode_withTheKeyOfTheWebsite(): void

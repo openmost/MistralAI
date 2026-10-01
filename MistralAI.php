@@ -108,8 +108,8 @@ class MistralAI extends \Piwik\Plugin
 
     private function pluginIsConfigured(): bool
     {
-        // any one key is enough: general key or the key of a website
-        return $this->chatIsConfigured() || SiteSettingsStorage::hasAnySiteApiKey();
+        // a custom host may have no key: general settings or the key or custom host of a website
+        return $this->chatIsConfigured() || SiteSettingsStorage::hasAnySiteConnection();
     }
 
     private function chatIsConfigured(): bool
@@ -117,20 +117,10 @@ class MistralAI extends \Piwik\Plugin
         try {
             $settings = new SystemSettings();
 
-            $host = $settings->host->getValue();
-            $apiKey = $settings->apiKey->getValue();
+            $host = trim((string) $settings->host->getValue());
+            $apiKey = trim((string) $settings->apiKey->getValue());
 
-            if (empty($host)) {
-                return false;
-            }
-
-            // Custom host doesn't require API key
-            $isCustomHost = $host !== Config::DEFAULT_HOST;
-            if (!$isCustomHost && empty($apiKey)) {
-                return false;
-            }
-
-            return true;
+            return $host !== '' && ($apiKey !== '' || !Config::isDefaultHost($host));
         } catch (\Throwable $e) {
             return false;
         }
