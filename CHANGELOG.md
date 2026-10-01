@@ -17,6 +17,9 @@
 - The general settings moved from *Administration > General settings* to a dedicated *Administration > System > Mistral AI* page, with a *Connection* card and a *Prompts* card saved separately, and a *Delete key* button. New API method `MistralAI.setSystemSettings`.
 - The website settings moved from the website edit form to *Administration > Websites > Mistral AI*. New API methods `MistralAI.getSiteSettings` and `MistralAI.setSiteSettings`.
 - Saved API keys are never sent back to the browser, and the general key is only sent to the general host.
+- The API key is optional on a custom host (self-hosted or compatible endpoint), as the documentation states: the chat, the insights and the plugin assets work with a keyless custom host, and no Authorization header is sent without a key. The default Mistral AI host still requires a key.
+- A general host that is not an HTTPS URL is refused on save with a translated error, as the host of a website already was, like in the ChatGPT plugin.
+- The host is checked with the same HTTPS rule when the settings are saved and when a request is sent, and the configuration errors of a request (host, API key, model, HTTPS) are translated.
 
 **Prompts**
 

@@ -42,7 +42,7 @@ Mistral AI retires old models, and some plans do not include every model (Mistra
 
 __Can I use another endpoint than Mistral AI?__
 
-Yes. Set the host to any OpenAI-compatible chat completions endpoint served over HTTPS, such as a self-hosted model served by vLLM, Ollama or LocalAI. The API key is optional for a custom host.
+Yes. Set the host to any OpenAI-compatible chat completions endpoint served over HTTPS, such as a self-hosted model served by vLLM, Ollama or LocalAI. The API key is optional for a custom host: without a key, no Authorization header is sent.
 
 __What do the insights analyse?__
 

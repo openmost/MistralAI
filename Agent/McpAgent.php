@@ -14,8 +14,10 @@ use Piwik\API\Request;
 use Piwik\Log\LoggerInterface;
 use Piwik\NoAccessException;
 use Piwik\Piwik;
+use Piwik\Plugins\MistralAI\Services\ApiConnection;
 use Piwik\Plugins\MistralAI\Settings\EffectiveSettings;
 use Piwik\Plugins\MistralAI\Settings\ModelUpgradeNotice;
+use Piwik\Plugins\MistralAI\SystemSettings;
 use Piwik\Site;
 
 /**
@@ -287,7 +289,7 @@ class McpAgent
     protected function converse(array $payload, EffectiveSettings $settings): array
     {
         $host = $settings->getHost();
-        if (!$this->isValidHost($host)) {
+        if (!SystemSettings::isHttpsUrl($host)) {
             throw new MistralApiException('Invalid API host URL - HTTPS required');
         }
 
@@ -332,10 +334,7 @@ class McpAgent
     protected function sendRequest(string $host, string $apiKey, array $payload): array
     {
         $headers = [];
-        $httpHeaders = ['Content-Type: application/json', 'Accept: application/json'];
-        if ($apiKey !== '') {
-            $httpHeaders[] = 'Authorization: Bearer ' . $apiKey;
-        }
+        $httpHeaders = ApiConnection::headers($apiKey);
 
         $ch = curl_init($host);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -489,13 +488,6 @@ class McpAgent
         if ($wait > 0) {
             $this->pause($wait);
         }
-    }
-
-    private function isValidHost(string $host): bool
-    {
-        $parsed = parse_url($host);
-
-        return is_array($parsed) && ($parsed['scheme'] ?? '') === 'https' && !empty($parsed['host']);
     }
 
     private function getMcpStatus(): string

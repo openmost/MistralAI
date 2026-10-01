@@ -54,6 +54,11 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
         $this->host = $this->makeSetting('host', Config::DEFAULT_HOST, FieldConfig::TYPE_STRING, function (FieldConfig $field) {
             $this->configureHostField($field);
             $field->validators[] = new NotEmpty();
+            $field->validate = function ($value) {
+                if (!self::isHttpsUrl((string) $value)) {
+                    throw new \Exception(Piwik::translate('MistralAI_InvalidApiUrl'));
+                }
+            };
         });
 
         $this->apiKey = $this->makeSetting('apiKey', null, FieldConfig::TYPE_STRING, function (FieldConfig $field) {
@@ -100,6 +105,16 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
     public function getSettingsWritableByCurrentUser()
     {
         return [];
+    }
+
+    /**
+     * Every request is refused for a host that is not an HTTPS URL, so such a host cannot be saved.
+     */
+    public static function isHttpsUrl(string $url): bool
+    {
+        $parsed = parse_url(trim($url));
+
+        return is_array($parsed) && strtolower($parsed['scheme'] ?? '') === 'https' && !empty($parsed['host']);
     }
 
     /**

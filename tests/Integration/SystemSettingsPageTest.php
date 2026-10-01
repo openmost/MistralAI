@@ -207,6 +207,32 @@ class SystemSettingsPageTest extends IntegrationTestCase
         $this->saveViaApi(['host' => '']);
     }
 
+    /**
+     * @dataProvider getNonHttpsHosts
+     */
+    public function test_aHostThatIsNotHttps_isRefused_withATranslatedError(string $host): void
+    {
+        $this->saveViaApi(['host' => 'https://kept.example.com/v1/chat/completions']);
+
+        try {
+            $this->saveViaApi(['host' => $host]);
+            $this->fail('A host that is not an HTTPS URL must be refused');
+        } catch (\Exception $e) {
+            $this->assertStringStartsWith('Invalid API host URL - HTTPS required', $e->getMessage());
+        }
+
+        $this->assertSame('https://kept.example.com/v1/chat/completions', (new SystemSettings())->host->getValue());
+    }
+
+    public function getNonHttpsHosts(): array
+    {
+        return [
+            'http' => ['http://llm.example.com/v1/chat/completions'],
+            'no scheme' => ['llm.example.com/v1/chat/completions'],
+            'no host' => ['https:///v1/chat/completions'],
+        ];
+    }
+
     public function test_theFields_stayEditable_withoutTakeoverNotice(): void
     {
         $fields = (new SystemSettingsForm())->getFields();

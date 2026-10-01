@@ -11,6 +11,7 @@ namespace Piwik\Plugins\MistralAI;
 
 use Piwik\Common;
 use Piwik\Piwik;
+use Piwik\Plugins\MistralAI\Services\ApiConnection;
 use Piwik\Plugins\MistralAI\Services\ChatRequestParser;
 use Piwik\Plugins\MistralAI\Services\InsightNotAvailableException;
 use Piwik\Plugins\MistralAI\Services\InsightReport;
@@ -321,15 +322,11 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
-     * Validates that the URL is a valid HTTPS API endpoint
+     * Validates that the URL is a valid HTTPS API endpoint, with the rule of the general settings
      */
     private function isValidApiUrl(?string $url): bool
     {
-        if (empty($url)) {
-            return false;
-        }
-        $parsed = parse_url($url);
-        return isset($parsed['scheme']) && $parsed['scheme'] === 'https' && isset($parsed['host']);
+        return SystemSettings::isHttpsUrl((string) $url);
     }
 
     /**
@@ -339,18 +336,14 @@ class API extends \Piwik\Plugin\API
      */
     private function fetchModelAi(array $conversation, EffectiveSettings $settings): array
     {
-        $config = $this->getAiConfig($settings);
+        $config = ApiConnection::fromSettings($settings);
 
         $data = [
             "model" => $config['model'],
             "messages" => $this->requestParser->sanitizeConversation($conversation),
         ];
 
-        $headers = [
-            'Content-Type: application/json',
-            'Accept: application/json',
-            'Authorization: Bearer ' . $config['apiKey'],
-        ];
+        $headers = ApiConnection::headers($config['apiKey']);
 
         $responseHeaders = [];
 
@@ -418,7 +411,7 @@ class API extends \Piwik\Plugin\API
      */
     private function streamModelAi(array $conversation, EffectiveSettings $settings): void
     {
-        $config = $this->getAiConfig($settings);
+        $config = ApiConnection::fromSettings($settings);
 
         $data = [
             "model" => $config['model'],
@@ -451,11 +444,7 @@ class API extends \Piwik\Plugin\API
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $config['apiKey'],
-            'Content-Type: application/json',
-            'Accept: text/event-stream',
-        ]);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ApiConnection::headers($config['apiKey'], 'text/event-stream'));
         curl_setopt($ch, CURLOPT_TIMEOUT, 0); // No timeout for streaming
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
 
@@ -558,36 +547,4 @@ class API extends \Piwik\Plugin\API
         return 'API request failed (HTTP ' . $httpCode . ') for model "' . $model . '" with no response body';
     }
 
-    /**
-     * Gets AI configuration for a site
-     * @throws Exception if configuration is invalid
-     */
-    private function getAiConfig(EffectiveSettings $settings): array
-    {
-        $host = $settings->getHost();
-        $apiKey = $settings->getApiKey();
-        $model = $settings->getModel();
-
-        if (empty($host)) {
-            throw new Exception('MistralAI host is not configured');
-        }
-
-        if (empty($apiKey)) {
-            throw new Exception('MistralAI API key is not configured');
-        }
-
-        if ($model === '') {
-            throw new Exception('MistralAI model is not configured');
-        }
-
-        if (!$this->isValidApiUrl($host)) {
-            throw new Exception('Invalid API host URL - HTTPS required');
-        }
-
-        return [
-            'host' => $host,
-            'apiKey' => $apiKey,
-            'model' => $model,
-        ];
-    }
 }
