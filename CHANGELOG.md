@@ -1,5 +1,9 @@
 ## Changelog
 
+### 5.10.1
+
+- Security: restrict insight requests to Matomo reports.
+
 ### 5.10.0
 
 **Refreshed model list and dark theme support**
