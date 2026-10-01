@@ -45,6 +45,7 @@
 **Compatibility**
 
 - Requires Matomo 5.10.0 or higher, for the theme variables used by the chat. The agent mode needs MCP Server (Matomo 5.8 or higher, PHP 8.1 or higher).
+- Smaller package: the Vue source maps, which Matomo does not load, are no longer shipped.
 
 ### 5.10.1
 
