@@ -1,0 +1,11 @@
+{% extends 'admin.twig' %}
+
+{% set title %}{{ 'MistralAI_SystemSettingsMenu'|translate }}{% endset %}
+
+{% block content %}
+    <div vue-entry="MistralAI.ManageSystemSettings"
+         fields="{{ fields|json_encode|e('html_attr') }}"
+         settings="{{ values|json_encode|e('html_attr') }}"
+         default-prompts="{{ defaultPrompts|json_encode|e('html_attr') }}"
+    ></div>
+{% endblock %}

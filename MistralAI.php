@@ -8,11 +8,16 @@
 
 namespace Piwik\Plugins\MistralAI;
 
+use Piwik\Plugins\MistralAI\Settings\SiteSettingsStorage;
+
 class MistralAI extends \Piwik\Plugin
 {
     public function registerEvents()
     {
         return array(
+            'Template.afterEventsReport' => 'renderOpenmostCommunicationAfterEvents',
+            'Widget.filterWidgets' => 'addOpenmostCommunicationWidgets',
+            'Template.beforeContent' => 'renderOpenmostCommunication',
             'AssetManager.getJavaScriptFiles' => 'getJavaScriptFiles',
             'AssetManager.getStylesheetFiles' => 'getStylesheetFiles',
             'Translate.getClientSideTranslationKeys' => 'getClientSideTranslationKeys',
@@ -33,6 +38,58 @@ class MistralAI extends \Piwik\Plugin
         $translationKeys[] = 'MistralAI_AnErrorOccurred';
         $translationKeys[] = 'MistralAI_NoResponseBody';
         $translationKeys[] = 'MistralAI_WaitingForResponse';
+        $translationKeys[] = 'MistralAI_SiteSettingsTitle';
+        $translationKeys[] = 'MistralAI_SiteSettingsIntro';
+        $translationKeys[] = 'MistralAI_SiteSettingsGeneralSettings';
+        $translationKeys[] = 'General_GeneralSettings';
+        $translationKeys[] = 'General_YourChangesHaveBeenSaved';
+        $translationKeys[] = 'MistralAI_AgentToolStep';
+        $translationKeys[] = 'MistralAI_AgentMcpUnavailable';
+        $translationKeys[] = 'MistralAI_AskAdministrator';
+        $translationKeys[] = 'MistralAI_SystemSettingsMenu';
+        $translationKeys[] = 'MistralAI_SystemSettingsIntro';
+        $translationKeys[] = 'MistralAI_SystemSettingsLink';
+        $translationKeys[] = 'MistralAI_SettingsConnectionTitle';
+        $translationKeys[] = 'MistralAI_SettingsPromptsTitle';
+        $translationKeys[] = 'MistralAI_ResetPromptToDefault';
+        $translationKeys[] = 'MistralAI_ResetPromptToDefaultHelp';
+        $translationKeys[] = 'MistralAI_UseGeneralPrompt';
+        $translationKeys[] = 'MistralAI_UseGeneralPromptHelp';
+        $translationKeys[] = 'MistralAI_SiteSettingsPromptsIntro';
+        $translationKeys[] = 'MistralAI_DeleteApiKey';
+        $translationKeys[] = 'MistralAI_DeleteApiKeyConfirmTitle';
+        $translationKeys[] = 'MistralAI_DeleteApiKeyConfirmText';
+        $translationKeys[] = 'MistralAI_DeleteSiteApiKeyConfirmText';
+        $translationKeys[] = 'MistralAI_DeleteApiKeyDone';
+        $translationKeys[] = 'General_Yes';
+        $translationKeys[] = 'General_No';
+        $translationKeys[] = 'MistralAI_CloseInsights';
+        $translationKeys[] = 'MistralAI_CopyAnswer';
+        $translationKeys[] = 'MistralAI_AnswerCopied';
+        $translationKeys[] = 'MistralAI_ScrollToLatest';
+        $translationKeys[] = 'MistralAI_ComposerHint';
+        $translationKeys[] = 'MistralAI_AnswerAnnouncement';
+        $translationKeys[] = 'MistralAI_AgentStepsSummary';
+        $translationKeys[] = 'MistralAI_AgentStepsFailed';
+        $translationKeys[] = 'MistralAI_AgentStepRunning';
+        $translationKeys[] = 'MistralAI_AgentStepDone';
+        $translationKeys[] = 'MistralAI_AgentStepError';
+        $translationKeys[] = 'MistralAI_EmptyStateTitle';
+        $translationKeys[] = 'MistralAI_EmptyStateText';
+        $translationKeys[] = 'MistralAI_SuggestionsLabel';
+        $translationKeys[] = 'MistralAI_SuggestionWeeklyKpis';
+        $translationKeys[] = 'MistralAI_SuggestionTopPages';
+        $translationKeys[] = 'MistralAI_SuggestionTrafficSources';
+        $translationKeys[] = 'MistralAI_SuggestionGoals';
+        $translationKeys[] = 'MistralAI_NewConversation';
+        $translationKeys[] = 'MistralAI_ScrollableTable';
+        $translationKeys[] = 'MistralAI_ScrollableCode';
+        $translationKeys[] = 'MistralAI_CopyCode';
+        $translationKeys[] = 'MistralAI_CodeCopied';
+        foreach (['InstallMcpServer', 'ActivateMcpServer', 'EnableMcp', 'EnableWriteMode'] as $step) {
+            $translationKeys[] = 'MistralAI_Recommend' . $step;
+            $translationKeys[] = 'MistralAI_Recommend' . $step . 'Action';
+        }
     }
 
     public function getJavaScriptFiles(&$files)
@@ -50,6 +107,12 @@ class MistralAI extends \Piwik\Plugin
     }
 
     private function pluginIsConfigured(): bool
+    {
+        // any one key is enough: general key or the key of a website
+        return $this->chatIsConfigured() || SiteSettingsStorage::hasAnySiteApiKey();
+    }
+
+    private function chatIsConfigured(): bool
     {
         try {
             $settings = new SystemSettings();
@@ -80,5 +143,20 @@ class MistralAI extends \Piwik\Plugin
             // Catch any error during plugin installation/initialization
             return false;
         }
+    }
+
+    public function renderOpenmostCommunication(&$out, $layout, $module = '', $action = '')
+    {
+        OpenmostCommunication::beforeContent($out, (string) $layout, (string) $module, (string) $action, $this->getPluginName());
+    }
+
+    public function addOpenmostCommunicationWidgets($list)
+    {
+        OpenmostCommunication::filterWidgets($list, $this->getPluginName());
+    }
+
+    public function renderOpenmostCommunicationAfterEvents(&$out, $dataTable = null)
+    {
+        OpenmostCommunication::afterEventsReport($out, $this->getPluginName());
     }
 }
