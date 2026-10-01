@@ -1,41 +1,88 @@
 <template>
-  <div class="ai-chat-interface">
+  <div :class="['ai-chat', 'ai-chat-theme', `ai-chat--${variant}`]">
     <ChatMessagesList
       :loading="loading"
       :errored="errored"
       :error-message="errorMessage"
+      :error-settings-url="errorSettingsUrl"
+      :error-settings-label="errorSettingsLabel"
+      :recommendation="recommendation"
       :messages="displayMessages"
       :ai-name="aiName"
-      :ai-color="aiColor"
+      :ai-label="aiLabel"
       :streaming="streaming"
-    />
-    <ChatForm :loading="loading || streaming" :ai-label="aiLabel" @prompt="onSubmit"/>
+    >
+      <template
+        v-if="showEmptyState"
+        #empty
+      >
+        <ChatEmptyState
+          :ai-name="aiName"
+          :ai-label="aiLabel"
+          @suggest="onSuggestion"
+        />
+      </template>
+    </ChatMessagesList>
+    <div class="ai-chat-composer">
+      <ChatForm
+        ref="form"
+        :loading="loading || streaming"
+        :ai-label="aiLabel"
+        @prompt="onSubmit"
+      />
+    </div>
+    <p
+      class="ai-chat-sr-only"
+      aria-live="polite"
+      aria-atomic="true"
+    >{{ announcement }}</p>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { AjaxHelper, MatomoUrl } from 'CoreHome';
+import { AjaxHelper, MatomoUrl, translate } from 'CoreHome';
 import ChatForm from './ChatForm.vue';
 import ChatMessagesList from './ChatMessagesList.vue';
+import ChatEmptyState from './ChatEmptyState.vue';
+import markdownToPlainText from './markdownToPlainText';
+import watchDarkSurface from './darkSurface';
+import {
+  AgentEvent,
+  AgentStatus,
+  AgentStep,
+  ApiError,
+  ApiResponse,
+  Message,
+  Recommendation,
+} from '../../types';
 
-interface Message {
-  role: string;
-  content: string;
+// the segment and the comparison of the report being viewed, in the GET query of every request
+function getContextParams(): Record<string, string> {
+  const params: Record<string, string> = {
+    idSite: String(MatomoUrl.parsed.value.idSite || ''),
+    period: String(MatomoUrl.parsed.value.period || 'day'),
+    date: String(MatomoUrl.parsed.value.date || 'today'),
+  };
+  const { segment } = MatomoUrl.parsed.value;
+  if (segment) {
+    params.segment = String(segment);
+  }
+  return params;
 }
 
-interface StreamChoice {
-  delta?: { role?: string; content?: string };
-  message?: { role?: string; content?: string };
-}
-
-interface ApiResponse {
-  choices?: StreamChoice[];
-  error?: { message: string };
+function appendComparisonParams(params: URLSearchParams): void {
+  ['comparePeriods', 'compareDates', 'compareSegments'].forEach((key) => {
+    const values = MatomoUrl.parsed.value[key];
+    (Array.isArray(values) ? values : []).forEach((value) => {
+      params.append(`${key}[]`, String(value));
+    });
+  });
 }
 
 export default defineComponent({
   components: {
+    ChatEmptyState,
     ChatMessagesList,
     ChatForm,
   },
@@ -47,6 +94,10 @@ export default defineComponent({
     streamingApiMethod: { type: String, default: 'MistralAI.getStreamingResponse' },
     widgetParams: { type: Object, default: () => ({}) },
     useStreaming: { type: Boolean, default: true },
+    // 'panel' in the report insights overlay, 'page' on the chat page
+    variant: { type: String, default: 'panel' },
+    // suggested questions while the conversation is empty
+    showEmptyState: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -54,33 +105,224 @@ export default defineComponent({
       streaming: false,
       errored: false,
       errorMessage: '',
+      errorSettingsUrl: '',
+      errorSettingsLabel: '',
       messages: [] as Message[],
       streamingContent: '',
+      agentSteps: [] as AgentStep[],
+      agentStatus: null as AgentStatus | null,
+      agentStatusPromise: null as Promise<void> | null,
+      conversationId: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`,
+      receivedAgentEvent: false,
       abortController: null as AbortController | null,
       streamingSupported: true,
+      announcement: '',
     };
+  },
+  created() {
+    this.agentStatusPromise = this.loadAgentStatus();
+  },
+  mounted() {
+    watchDarkSurface();
   },
   computed: {
     displayMessages(): Message[] {
-      if (this.streaming && this.streamingContent) {
-        return [...this.messages, { role: 'assistant', content: this.streamingContent }];
+      if (this.streaming && (this.streamingContent || this.agentSteps.length)) {
+        return [
+          ...this.messages,
+          { role: 'assistant', content: this.streamingContent, steps: this.agentSteps },
+        ];
       }
       return this.messages;
     },
+    // the agent answers with the Matomo tools of McpServer, the classic chat otherwise
+    isAgentMode(): boolean {
+      return this.agentStatus?.mode === 'agent';
+    },
+    // the next step to unlock the agent mode, one at a time
+    recommendation(): Recommendation | null {
+      const recommendations = this.agentStatus?.recommendations;
+      return recommendations && recommendations.length ? recommendations[0] : null;
+    },
+  },
+  watch: {
+    // complete answers only: the streamed text lives outside messages until it is done
+    'messages.length': function onMessagesAdded() {
+      const lastMessage = this.messages[this.messages.length - 1];
+      if (!lastMessage || lastMessage.role === 'user' || !lastMessage.content) {
+        return;
+      }
+      this.announcement = '';
+      this.$nextTick(() => {
+        this.announcement = `${translate('MistralAI_AnswerAnnouncement', this.aiLabel)} ${
+          markdownToPlainText(lastMessage.content)}`;
+      });
+    },
   },
   methods: {
-    onSubmit(userPrompt?: Message) {
+    focusInput() {
+      const form = this.$refs.form as InstanceType<typeof ChatForm> | undefined;
+      if (form) {
+        form.focus();
+      }
+    },
+    onSuggestion(text: string) {
+      this.onSubmit({ role: 'user', content: text });
+    },
+    async onSubmit(userPrompt?: Message) {
       if (userPrompt) {
         this.messages.push(userPrompt);
       }
       this.loading = true;
       this.errored = false;
       this.errorMessage = '';
+      this.errorSettingsUrl = '';
+      this.errorSettingsLabel = '';
 
-      if (this.useStreaming && this.streamingSupported) {
+      // the first message may be sent before the agent status is known (insights panel)
+      if (this.agentStatusPromise) {
+        await this.agentStatusPromise;
+      }
+
+      if (this.isAgentMode) {
+        this.fetchAgent();
+      } else if (this.useStreaming && this.streamingSupported) {
         this.fetchStreaming();
       } else {
         this.fetchNonStreaming();
+      }
+    },
+
+    async loadAgentStatus(): Promise<void> {
+      try {
+        const params = new URLSearchParams({
+          module: 'MistralAI',
+          action: 'agentStatus',
+          ...getContextParams(),
+        });
+        appendComparisonParams(params);
+        const response = await fetch(`index.php?${params.toString()}`, { credentials: 'include' });
+        this.agentStatus = response.ok ? await response.json() as AgentStatus : null;
+      } catch {
+        // keep the classic chat
+        this.agentStatus = null;
+      } finally {
+        this.agentStatusPromise = null;
+      }
+    },
+
+    getConversationPayload(): string {
+      return JSON.stringify(this.messages.map(({ role, content }) => ({ role, content })));
+    },
+
+    async fetchAgent() {
+      this.streaming = false;
+      this.streamingContent = '';
+      this.agentSteps = [];
+      this.receivedAgentEvent = false;
+
+      if (this.abortController) {
+        this.abortController.abort();
+      }
+      this.abortController = new AbortController();
+
+      try {
+        const params = new URLSearchParams({
+          module: 'MistralAI',
+          action: 'agent',
+          ...getContextParams(),
+        });
+        appendComparisonParams(params);
+
+        const postBody = new URLSearchParams({
+          messages: this.getConversationPayload(),
+          widgetParams: JSON.stringify(this.widgetParams),
+          conversationId: this.conversationId,
+          token_auth: this.getTokenAuth(),
+          force_api_session: '1',
+        });
+
+        const response = await fetch(`index.php?${params.toString()}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: postBody,
+          credentials: 'include',
+          signal: this.abortController.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body');
+        }
+
+        await this.processStream(reader, (data) => this.parseAgentData(data));
+
+        // the agent is never retried with the classic chat: the request may already have run tools
+        if (!this.receivedAgentEvent) {
+          this.handleError(translate('MistralAI_AnErrorOccurred'));
+        } else if (this.streamingContent || this.agentSteps.length) {
+          this.messages.push({
+            role: 'assistant',
+            content: this.streamingContent,
+            steps: this.agentSteps,
+          });
+        }
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
+        this.handleError(error instanceof Error ? error.message : String(error));
+      } finally {
+        this.loading = false;
+        this.streaming = false;
+        this.streamingContent = '';
+        this.agentSteps = [];
+        this.abortController = null;
+      }
+    },
+
+    parseAgentData(data: string): void {
+      let event: AgentEvent;
+      try {
+        event = JSON.parse(data);
+      } catch {
+        return;
+      }
+
+      this.receivedAgentEvent = true;
+
+      if (event.type === 'error') {
+        this.handleError(event.message || translate('MistralAI_AnErrorOccurred'), {
+          message: event.message || '',
+          settingsUrl: event.settingsUrl,
+          settingsLabel: event.settingsLabel,
+        });
+        return;
+      }
+
+      if (!this.streaming) {
+        this.streaming = true;
+        this.loading = false;
+      }
+
+      if (event.type === 'text' && event.content) {
+        this.streamingContent = this.streamingContent
+          ? `${this.streamingContent}\n\n${event.content}`
+          : event.content;
+      } else if (event.type === 'tool_call' && event.id) {
+        this.agentSteps.push({
+          id: event.id,
+          name: event.name || '',
+          title: event.title || event.name || '',
+          status: 'running',
+        });
+      } else if (event.type === 'tool_result' && event.id) {
+        const step = this.agentSteps.find((agentStep) => agentStep.id === event.id);
+        if (step) {
+          step.status = event.isError ? 'error' : 'done';
+        }
       }
     },
 
@@ -99,10 +341,9 @@ export default defineComponent({
           method: this.streamingApiMethod,
           format: 'original',
           force_api_session: '1',
-          idSite: String(MatomoUrl.parsed.value.idSite || ''),
-          period: String(MatomoUrl.parsed.value.period || 'day'),
-          date: String(MatomoUrl.parsed.value.date || 'today'),
+          ...getContextParams(),
         });
+        appendComparisonParams(params);
 
         const tokenAuth = this.getTokenAuth();
         if (tokenAuth) {
@@ -110,7 +351,7 @@ export default defineComponent({
         }
 
         const postBody = new URLSearchParams({
-          messages: JSON.stringify(this.messages),
+          messages: this.getConversationPayload(),
           widgetParams: JSON.stringify(this.widgetParams),
         });
 
@@ -131,21 +372,17 @@ export default defineComponent({
           throw new Error('No response body');
         }
 
-        await this.processStream(reader);
+        await this.processStream(reader, (data) => this.parseStreamData(data));
 
         if (this.streamingContent) {
           this.messages.push({ role: 'assistant', content: this.streamingContent });
         } else if (!this.errored) {
-          // Stream completed but no content received - fall back to non-streaming
-          console.warn('MistralAI: Streaming completed but no content received, falling back to non-streaming');
+          // some Mistral compatible hosts close the stream without content: retry without streaming
           this.streamingSupported = false;
           this.fetchNonStreaming();
-          return;
         }
       } catch (error) {
         if ((error as Error).name === 'AbortError') return;
-
-        console.error('MistralAI: Streaming error:', error);
 
         if (!this.streamingContent && this.streamingSupported) {
           this.streamingSupported = false;
@@ -155,10 +392,12 @@ export default defineComponent({
         }
         this.handleError(error instanceof Error ? error.message : String(error));
       } finally {
-        this.loading = false;
         this.streaming = false;
         this.streamingContent = '';
         this.abortController = null;
+        if (this.streamingSupported) {
+          this.loading = false;
+        }
       }
     },
 
@@ -173,7 +412,10 @@ export default defineComponent({
         || String(MatomoUrl.parsed.value.token_auth || '');
     },
 
-    async processStream(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<void> {
+    async processStream(
+      reader: ReadableStreamDefaultReader<Uint8Array>,
+      onData: (data: string) => void,
+    ): Promise<void> {
       const decoder = new TextDecoder();
       let buffer = '';
 
@@ -189,7 +431,7 @@ export default defineComponent({
           if (line.startsWith('data: ')) {
             const data = line.slice(6).trim();
             if (data !== '[DONE]') {
-              this.parseStreamData(data);
+              onData(data);
             }
           }
         });
@@ -204,7 +446,7 @@ export default defineComponent({
       try {
         const parsed: ApiResponse = JSON.parse(data);
         if (parsed.error) {
-          this.handleError(parsed.error.message);
+          this.handleError(parsed.error.message, parsed.error);
           return;
         }
         const content = parsed.choices?.[0]?.delta?.content;
@@ -215,17 +457,18 @@ export default defineComponent({
           }
           this.streamingContent += content;
         }
-      } catch (e) {
-        // Log parse errors for debugging but don't fail
-        console.warn('MistralAI: Failed to parse stream data:', data, e);
+      } catch {
+        // Skip non-JSON lines
       }
     },
 
     fetchNonStreaming() {
+      this.loading = true;
+
       AjaxHelper
         .fetch({ method: this.apiMethod }, {
           postParams: {
-            messages: this.messages,
+            messages: this.messages.map(({ role, content }) => ({ role, content })),
             widgetParams: this.widgetParams,
           },
         })
@@ -235,7 +478,7 @@ export default defineComponent({
             return;
           }
           if (response.error) {
-            this.handleError(response.error.message || 'An error occurred');
+            this.handleError(response.error.message || 'An error occurred', response.error);
             return;
           }
           const message = response.choices?.[0]?.message;
@@ -254,9 +497,13 @@ export default defineComponent({
         });
     },
 
-    handleError(error: string) {
+    handleError(error: string, details?: ApiError) {
       this.errored = true;
       this.errorMessage = error;
+      this.errorSettingsUrl = details?.settingsUrl || '';
+      this.errorSettingsLabel = details?.settingsLabel || '';
+      this.loading = false;
+      this.streaming = false;
     },
 
     cancelRequest() {
@@ -276,11 +523,30 @@ export default defineComponent({
 });
 </script>
 
+<style lang="less">
+// byte-identical copy of the ChatGPT plugin file, the canonical source: edit both together
+@import './theme.less';
+</style>
+
 <style lang="less" scoped>
-.ai-chat-interface {
+.ai-chat {
+  --ai-chat-accent: v-bind(aiColor);
+
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 0;
+  min-width: 0;
+  background: var(--ai-chat-surface);
+}
+
+.ai-chat-composer {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--ai-chat-column-width, 46rem);
+  margin: 0 auto;
+  padding: var(--ai-chat-composer-padding, .5rem 1rem .75rem);
 }
 </style>

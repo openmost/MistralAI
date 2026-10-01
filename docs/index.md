@@ -1,150 +1,81 @@
 ## Documentation
 
-Integrate AI-powered analytics insights and chat functionality into your Matomo instance using MistralAI or any MistralAI-compatible API.
+Chat with your Matomo data and get one-click AI insights on any report, powered by Mistral AI or any OpenAI-compatible endpoint.
 
-## Features
+## Getting started
 
-### AI-Powered Report Insights
+1. Install and activate the plugin.
+2. Go to *Administration > System > Mistral AI* as a super user.
+3. In the *Connection* card, paste your Mistral AI API key, created in the [Mistral AI console](https://console.mistral.ai/), and save.
+4. Open a report and click the AI button in its header, or open the *Mistral AI* page from the main menu.
 
-Get instant AI-generated insights for any Matomo report. The plugin adds an "Insights" button to all report widgets that analyzes your data and provides actionable recommendations.
+## Report insights
 
-- Works with all report types (visitors, actions, referrers, goals, custom dimensions, custom reports, etc.)
-- Supports data tables, evolution graphs, and series visualizations
-- Conversation mode: ask follow-up questions about your report data
+The square AI button in the header of each report, styled like the Matomo 5 selectors, opens an insight panel. The analysis uses the full report as Matomo serves it: a compact payload with the rows, the totals, the metric names and units, and the exact API request behind the report. The active segment, the period and the compared periods or segments are taken into account. Tables, evolution graphs, goals, custom reports and the other widgets backed by a Matomo report are supported. You can ask follow-up questions in the same panel.
 
-### Dedicated AI Chat
+The panel is an accessible dialog: keyboard navigation, focus kept inside the panel, Escape to close.
 
-A full-featured chat interface for asking questions about your analytics data.
+## Chat
 
-- Accessible from the main menu under "MistralAI"
-- Real-time streaming responses (with automatic fallback for unsupported servers)
+The *Mistral AI* page of the main menu is a full chat with suggested questions. Answers stream in real time and are rendered as Markdown, with readable tables, highlighted code and copy buttons. The conversation follows the latest message while it is written, unless you scroll up.
 
-### Flexible Model Configuration
+## Agent mode
 
-Choose from preset models or specify custom model names:
+With the MCP Server plugin (Matomo Marketplace) installed, activated and enabled, the assistant queries your real reports through the Matomo tools to answer. Each tool call appears in a step timeline under the answer.
 
-**Preset Models** (curated for chat — code-completion, audio and vision-only specialists are excluded):
-- Mistral Large 3
-- Mistral Medium 3.5 *(default)*
-- Mistral Small 4
-- Magistral Medium 1.2 *(reasoning)*
-- Ministral 8B
-- Ministral 3B
-- Open Mistral Nemo *(legacy multilingual)*
+- Read tools are available as soon as MCP is enabled.
+- Write actions, such as creating a goal or an annotation, need write mode in the MCP Server settings. The assistant then always describes the change and waits for your explicit confirmation before it creates, modifies or deletes anything.
+- When a step is missing, the chat recommends it: install MCP Server, activate it, enable MCP or enable write mode. Super users get a direct link, other users are asked to contact their administrator.
+- Agent mode uses the *Agent mode model* of the general settings. Its default, "Latest recommended", works with the free Mistral AI plan. "Same as the chat model" reuses the chat model, except the 3B models, which are replaced by the recommended one.
 
-**Custom Models:**
-Specify any model name to use models not in the preset list, perfect for newer Mistral releases, code/audio/vision specialists (Codestral, Devstral, Voxtral, Pixtral, …), self-hosted LLMs, or other Mistral-compatible providers.
+## Settings
 
-### Custom Host Support
+### General settings
 
-Connect to any MistralAI-compatible API endpoint:
-- MistralAI (default)
-- Azure MistralAI
-- Self-hosted solutions (Ollama, LocalAI, vLLM, etc.)
-- Other providers (Anthropic via proxy, Mistral, etc.)
+*Administration > System > Mistral AI* (super user):
 
-## Installation
+| Card | Setting | Description |
+|---|---|---|
+| Connection | Host | Chat completions endpoint, an HTTPS URL. Default: `https://api.mistral.ai/v1/chat/completions` |
+| Connection | API key | Required for Mistral AI, optional for a custom host. Never displayed once saved, removed with *Delete key* |
+| Connection | Model (Preset) | Latest recommended (default), Mistral Medium 3.5, Mistral Large 3, Mistral Small 4, Ministral 3 14B, 8B or 3B |
+| Connection | Model (Custom) | Any model name, overrides the preset |
+| Connection | Agent mode model | Model used with the Matomo tools |
+| Prompts | Chat base prompt | Instructions of the chat |
+| Prompts | Insight base prompt | Instructions of the insights |
 
-### From Marketplace
+Each card is saved on its own. *Reset to default* fills in the default prompts in your language. A prompt equal to its default is not stored, so it follows the updates of the plugin. Default prompts saved by previous versions are upgraded automatically, custom prompts are kept.
 
-1. Go to the Administration panel as a super user
-2. Navigate to the Marketplace section and select "Plugins"
-3. Search for "**MistralAI**"
-4. Install and activate the plugin
+### Website settings
 
-### Manual Installation
+*Administration > Websites > Mistral AI* (website admin) overrides the host, API key, model and prompts for one website. Leave a field empty to use the general value. *Use the general prompts* makes the website follow the general prompts again.
 
-1. Download the plugin from [GitHub](https://github.com/openmost/MistralAI)
-2. Extract to your `/plugins` folder
-3. Activate the plugin in Matomo's Plugin settings
+### API key cascade
 
-## Configuration
+The key of the website is used first, then the general key. The general key is only sent to the general host, so a website using another host must set its own key. The plugin never uses the Matomo AI Providers plugin, which has no Mistral AI provider.
 
-### System Settings (Global)
+## API
 
-Navigate to **Administration > General Settings > MistralAI** to configure:
+| Method | Access | Description |
+|---|---|---|
+| `MistralAI.getResponse` | view | Chat answer, not streamed |
+| `MistralAI.getStreamingResponse` | view | Chat or insight answer, streamed as Server-Sent Events |
+| `MistralAI.getInsights` | view | Insight answer for a report widget |
+| `MistralAI.getSiteSettings` | website admin | Settings of a website, the API key replaced by a placeholder |
+| `MistralAI.setSiteSettings` | website admin | Saves the settings of a website |
+| `MistralAI.setSystemSettings` | super user | Saves the general settings |
 
-| Setting | Description |
-|---------|-------------|
-| **Host** | API endpoint URL. Default: `https://api.mistral.ai/v1/chat/completions` |
-| **API Key** | Your MistralAI API key (required for MistralAI, optional for custom hosts) |
-| **Model (Preset)** | Select from available model presets |
-| **Model (Custom)** | Override preset with a custom model name |
-| **Chat Base Prompt** | System prompt for chat conversations |
-| **Insight Base Prompt** | System prompt for report insights |
-
-### Measurable Settings (Per-Site)
-
-All system settings can be overridden per website in the site's Measurable Settings. Leave fields empty to use system defaults.
-
-This is useful for:
-- Using different models for different sites
-- Customizing prompts for specific website contexts
-- Using separate API keys per site
-
-## Usage
-
-### Getting Report Insights
-
-1. Navigate to any report in Matomo
-2. Click the "Insights" button (sparkle icon) in the report header
-3. View AI-generated insights in the side panel
-4. Ask follow-up questions to dive deeper into the data
-
-### Using the Chat
-
-1. Go to **MistralAI** in the main menu
-2. Type your question about analytics
-3. Receive AI-powered responses with streaming support
-4. Continue the conversation with follow-up questions
-
-## API Reference
-
-The plugin provides the following API methods:
-
-| Method | Description |
-|--------|-------------|
-| `MistralAI.getResponse` | Get AI response for messages (non-streaming) |
-| `MistralAI.getStreamingResponse` | Get AI response with SSE streaming |
-| `MistralAI.getInsight` | Get AI insights for report data |
-| `MistralAI.getModels` | Get list of available preset models |
-
-### Parameters
-
-**MistralAI.getResponse**
-- `idSite` - Site ID
-- `period` - Period (day, week, month, year)
-- `date` - Date string
-- `messages` - Conversation messages in MistralAI format
-
-**MistralAI.getInsight**
-- `idSite` - Site ID
-- `period` - Period
-- `date` - Date string
-- `reportId` - Report identifier
-- `messages` - Conversation messages
-
-All API methods require appropriate view permissions for the requested site.
-
-## Multi-Language Support
-
-The plugin interface is available in:
-- English
-- German (Deutsch)
-- Spanish (Español)
-- French (Français)
-- Italian (Italiano)
-- Dutch (Nederlands)
-- Swedish (Svenska)
+Each user can send 30 requests per hour and per website.
 
 ## Requirements
 
-- Matomo 5.0.0 or higher
-- PHP 7.4 or higher
-- Valid API key (for MistralAI) or accessible custom host
+- Matomo 5.10.0 or later, below 6.0.0.
+- PHP: the minimum required by Matomo.
+- A Mistral AI API key, or the URL of an OpenAI-compatible endpoint.
+- Optional: the MCP Server plugin for agent mode. MCP Server 5.x requires Matomo 5.8 and PHP 8.1 or later.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/openmost/MistralAI/issues)
-- **Documentation**: [Plugin Homepage](https://openmost.io/products/mistral-ai)
-- **Email**: ronan@openmost.io
+- Homepage: https://openmost.com/matomo/extensions/mistral-ai
+- Issues: https://github.com/openmost/MistralAI/issues
+- Email: ronan@openmost.com

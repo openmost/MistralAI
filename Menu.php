@@ -10,6 +10,10 @@ namespace Piwik\Plugins\MistralAI;
 
 use Piwik\Menu\MenuAdmin;
 use Piwik\Menu\MenuTop;
+use Piwik\Piwik;
+use Piwik\Plugins\MistralAI\Settings\SystemSettingsForm;
+use Piwik\Plugins\UsersManager\UserPreferences;
+use Piwik\Request;
 
 /**
  * This class allows you to add, remove or rename menu items.
@@ -26,11 +30,16 @@ class Menu extends \Piwik\Plugin\Menu
 
     public function configureAdminMenu(MenuAdmin $menu)
     {
-        // reuse an existing category. Execute the showList() method within the controller when menu item was clicked
-        // $menu->addManageItem('MistralAI_MyUserItem', $this->urlForAction('showList'), $orderId = 30);
-        // $menu->addPlatformItem('MistralAI_MyUserItem', $this->urlForDefaultAction(), $orderId = 30);
+        if (Piwik::hasUserSuperUserAccess()) {
+            // next to AI Providers
+            $menu->addSystemItem('MistralAI_SystemSettingsMenu', $this->urlForAction(SystemSettingsForm::ACTION), 38);
+        }
 
-        // or create a custom category
-        // $menu->addItem('CoreAdminHome_MenuManage', 'MistralAI_MyUserItem', $this->urlForDefaultAction(), $orderId = 30);
+        $defaultIdSite = (int) (new UserPreferences())->getDefaultWebsiteId();
+        $idSite = Request::fromRequest()->getIntegerParameter('idSite', $defaultIdSite);
+
+        if ($idSite > 0 && Piwik::isUserHasAdminAccess($idSite)) {
+            $menu->addMeasurableItem('MistralAI_SiteSettingsMenu', $this->urlForAction('manage', ['idSite' => $idSite]), 46);
+        }
     }
 }

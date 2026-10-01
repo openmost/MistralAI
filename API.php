@@ -11,9 +11,18 @@ namespace Piwik\Plugins\MistralAI;
 
 use Piwik\API\Request;
 use Piwik\Common;
-use Piwik\Option;
 use Piwik\Piwik;
-use Piwik\Plugin\ReportsProvider;
+use Piwik\Container\StaticContainer;
+use Piwik\Plugins\MistralAI\Services\ChatRequestParser;
+use Piwik\Plugins\MistralAI\Services\InsightNotAvailableException;
+use Piwik\Plugins\MistralAI\Services\InsightReport;
+use Piwik\Plugins\MistralAI\Services\RateLimiter;
+use Piwik\Plugins\MistralAI\Services\SafeErrorMessage;
+use Piwik\Plugins\MistralAI\Settings\DefaultPrompts;
+use Piwik\Plugins\MistralAI\Settings\EffectiveSettings;
+use Piwik\Plugins\MistralAI\Settings\ModelUpgradeNotice;
+use Piwik\Plugins\MistralAI\Settings\SiteSettingsStorage;
+use Piwik\Plugins\MistralAI\Settings\SystemSettingsForm;
 use Exception;
 
 /**
@@ -30,12 +39,6 @@ class API extends \Piwik\Plugin\API
      */
     private const REQUEST_TIMEOUT = 60;
 
-    /**
-     * Rate limit settings
-     */
-    private const RATE_LIMIT_REQUESTS = 30;
-    private const RATE_LIMIT_WINDOW = 3600; // 1 hour
-
     public function __construct(\Piwik\Log\LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -49,14 +52,12 @@ class API extends \Piwik\Plugin\API
         Piwik::checkUserHasViewAccess($idSite);
 
         // Get messages from request if not passed or if passed as JSON string
-        $messages = $this->parseMessagesParam($messages);
+        $messages = StaticContainer::get(ChatRequestParser::class)->parseMessages($messages);
 
-        // Check rate limit
-        $this->checkRateLimit($idSite);
+        StaticContainer::get(RateLimiter::class)->check($idSite);
 
-        $systemSettings = new SystemSettings();
-        $measurableSettings = new MeasurableSettings($idSite);
-        $chatBasePrompt = $measurableSettings->chatBasePrompt->getValue() ?: $systemSettings->chatBasePrompt->getValue();
+        $settings = EffectiveSettings::forSite($idSite);
+        $chatBasePrompt = $settings->getChatBasePrompt();
 
         $conversationBase = [
             [
@@ -65,7 +66,7 @@ class API extends \Piwik\Plugin\API
             ]
         ];
 
-        return $this->fetchModelAi(array_merge($conversationBase, $messages), $idSite);
+        return $this->fetchModelAi(array_merge($conversationBase, $messages), $settings);
     }
 
     public function getInsights(int $idSite, string $period, string $date, $messages = [], $widgetParams = []): array
@@ -76,29 +77,19 @@ class API extends \Piwik\Plugin\API
         Piwik::checkUserHasViewAccess($idSite);
 
         // Parse messages and widgetParams from POST
-        $messages = $this->parseMessagesParam($messages);
-        $widgetParams = $this->parseWidgetParams($widgetParams);
+        $messages = StaticContainer::get(ChatRequestParser::class)->parseMessages($messages);
+        $widgetParams = StaticContainer::get(ChatRequestParser::class)->parseWidgetParams($widgetParams);
 
-        // Check rate limit
-        $this->checkRateLimit($idSite);
+        StaticContainer::get(RateLimiter::class)->check($idSite);
 
-        $systemSettings = new SystemSettings();
-        $measurableSettings = new MeasurableSettings($idSite);
-        $insightBasePrompt = $measurableSettings->insightBasePrompt->getValue() ?: $systemSettings->insightBasePrompt->getValue();
+        $settings = EffectiveSettings::forSite($idSite);
+        $insightBasePrompt = $settings->getInsightBasePrompt();
 
-        $requestParams = $this->buildRequestParams($widgetParams, $idSite, $date, $period);
-        $apiMethod = $this->resolveReportMethod($requestParams['_apiMethod'], $widgetParams);
-        unset($requestParams['_apiMethod']);
-
-        // Validate API method format (Module.action)
-        if (!preg_match('/^[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/', $apiMethod)) {
-            throw new Exception('Invalid API method format');
+        $insight = $this->fetchInsightData($widgetParams, $idSite, $date, $period);
+        if (isset($insight['error'])) {
+            return ['error' => $insight['error']];
         }
-
-        $this->checkIsReportMethod($apiMethod);
-
-        // Matomo's Request::processRequest handles permission checks internally
-        $data = Request::processRequest($apiMethod, $requestParams);
+        $data = $insight['data'];
 
         $conversationBase = [
             [
@@ -107,7 +98,7 @@ class API extends \Piwik\Plugin\API
             ]
         ];
 
-        return $this->fetchModelAi(array_merge($conversationBase, $messages), $idSite);
+        return $this->fetchModelAi(array_merge($conversationBase, $messages), $settings);
     }
 
     /**
@@ -122,34 +113,23 @@ class API extends \Piwik\Plugin\API
         Piwik::checkUserHasViewAccess($idSite);
 
         // Parse messages and widgetParams from POST
-        $messages = $this->parseMessagesParam($messages);
-        $widgetParams = $this->parseWidgetParams($widgetParams);
+        $messages = StaticContainer::get(ChatRequestParser::class)->parseMessages($messages);
+        $widgetParams = StaticContainer::get(ChatRequestParser::class)->parseWidgetParams($widgetParams);
 
-        $this->checkRateLimit($idSite);
+        StaticContainer::get(RateLimiter::class)->check($idSite);
 
-        $systemSettings = new SystemSettings();
-        $measurableSettings = new MeasurableSettings($idSite);
+        $settings = EffectiveSettings::forSite($idSite);
 
-        // Check if this is an insight request (has widgetParams with module/action)
-        $isInsight = !empty($widgetParams) && (isset($widgetParams['module']) || isset($widgetParams['action']));
-
-        if ($isInsight) {
+        if (StaticContainer::get(InsightReport::class)->isInsightRequest($widgetParams)) {
             // Insight mode: fetch report data and use insight prompt
-            $insightBasePrompt = $measurableSettings->insightBasePrompt->getValue() ?: $systemSettings->insightBasePrompt->getValue();
+            $insightBasePrompt = $settings->getInsightBasePrompt();
 
-            $requestParams = $this->buildRequestParams($widgetParams, $idSite, $date, $period);
-            $apiMethod = $this->resolveReportMethod($requestParams['_apiMethod'], $widgetParams);
-            unset($requestParams['_apiMethod']);
-
-            // Validate API method format (Module.action)
-            if (!preg_match('/^[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/', $apiMethod)) {
-                throw new Exception('Invalid API method format');
+            $insight = $this->fetchInsightData($widgetParams, $idSite, $date, $period);
+            if (isset($insight['error'])) {
+                $this->streamError($insight['error']['message']);
+                return;
             }
-
-            $this->checkIsReportMethod($apiMethod);
-
-            // Fetch report data
-            $data = Request::processRequest($apiMethod, $requestParams);
+            $data = $insight['data'];
 
             $conversationBase = [
                 [
@@ -159,7 +139,7 @@ class API extends \Piwik\Plugin\API
             ];
         } else {
             // Regular chat mode
-            $chatBasePrompt = $measurableSettings->chatBasePrompt->getValue() ?: $systemSettings->chatBasePrompt->getValue();
+            $chatBasePrompt = $settings->getChatBasePrompt();
 
             $conversationBase = [
                 [
@@ -169,191 +149,175 @@ class API extends \Piwik\Plugin\API
             ];
         }
 
-        $this->streamModelAi(array_merge($conversationBase, $messages), $idSite);
+        $this->streamModelAi(array_merge($conversationBase, $messages), $settings);
     }
 
     /**
-     * Check and enforce rate limits per site
-     * @throws Exception if rate limit exceeded
+     * The compact report payload of an insight, or the error to answer with instead: never a backtrace
+     *
+     * @return array{data?: string, error?: array{message: string}}
      */
-    private function checkRateLimit(int $idSite): void
+    private function fetchInsightData(array $widgetParams, int $idSite, string $date, string $period): array
     {
-        $userLogin = Piwik::getCurrentUserLogin();
-        $rateLimitKey = 'MistralAI_ratelimit_' . $idSite . '_' . $userLogin;
-
-        $currentTime = time();
-        $rateData = Option::get($rateLimitKey);
-
-        if ($rateData) {
-            $rateData = json_decode($rateData, true);
-            $windowStart = $rateData['window_start'] ?? 0;
-            $requestCount = $rateData['count'] ?? 0;
-
-            // Reset window if expired
-            if ($currentTime - $windowStart > self::RATE_LIMIT_WINDOW) {
-                $rateData = ['window_start' => $currentTime, 'count' => 0];
-            }
-
-            // Check limit
-            if ($rateData['count'] >= self::RATE_LIMIT_REQUESTS) {
-                $resetTime = $windowStart + self::RATE_LIMIT_WINDOW - $currentTime;
-                throw new Exception("Rate limit exceeded. Please wait {$resetTime} seconds before making another request.");
-            }
-        } else {
-            $rateData = ['window_start' => $currentTime, 'count' => 0];
+        try {
+            return ['data' => StaticContainer::get(InsightReport::class)->fetch($widgetParams, $idSite, $date, $period)];
+        } catch (InsightNotAvailableException $e) {
+            return ['error' => ['message' => $e->getMessage()]];
+        } catch (\Throwable $e) {
+            $this->logger->error('MistralAI insight error: {message}', ['message' => $e->getMessage(), 'exception' => $e]);
+            return ['error' => ['message' => SafeErrorMessage::fromThrowable($e)]];
         }
-
-        // Increment counter
-        $rateData['count']++;
-        Option::set($rateLimitKey, json_encode($rateData));
     }
 
     /**
-     * Builds request parameters from widget parameters with proper validation
+     * Answers a streamed request with an error, in the event format of the streamed chat completions
      */
-    private function buildRequestParams(array $widgetParams, int $idSite, string $date, string $period): array
+    private function streamError(string $message): void
     {
-        // Check if this is an evolution graph that needs multiple data points
-        $action = isset($widgetParams['action']) ? $widgetParams['action'] : '';
-        $isEvolutionGraph = in_array($action, ['getEvolutionGraph', 'getEvolutionOverview', 'getRowEvolution'], true);
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        header('Content-Type: text/event-stream');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('X-Accel-Buffering: no');
 
-        // For evolution graphs, use day period with last90 to get multiple data points
-        if ($isEvolutionGraph) {
-            $period = 'day';
-            $date = 'last90';
+        echo "data: " . json_encode(['error' => ['message' => $message]]) . "\n\n";
+        echo "data: [DONE]\n\n";
+        flush();
+    }
+
+    /**
+     * Settings of a website, empty values use the general settings. The API key is replaced by a placeholder.
+     *
+     * @return array<string, string>
+     */
+    public function getSiteSettings(int $idSite): array
+    {
+        Piwik::checkUserHasAdminAccess($idSite);
+
+        $values = SiteSettingsStorage::read($idSite);
+        if ($values['apiKey'] !== '') {
+            $values['apiKey'] = SiteSettingsStorage::API_KEY_PLACEHOLDER;
         }
 
-        $requestParams = [
-            'idSite' => $idSite,
-            'date' => $this->sanitizeDate($date),
-            'period' => $this->sanitizePeriod($period),
-            'format' => 'json',
+        return $values;
+    }
+
+    /**
+     * Sets the settings of a website, empty values use the general settings. A parameter left out keeps its saved
+     * value, so each card of the settings page saves only its own fields.
+     *
+     * A prompt equal to the general prompt, or to a default while the general prompt is a default too, is saved empty:
+     * the website then follows the general prompt.
+     *
+     * @param string|null $apiKey the placeholder returned by getSiteSettings or an empty value keeps the saved key
+     * @param string|null $modelPreset empty, "latest-recommended" or a model of the preset list
+     * @param bool $deleteApiKey removes the API key of the website, the only way to remove it
+     */
+    public function setSiteSettings(
+        int $idSite,
+        ?string $host = null,
+        ?string $apiKey = null,
+        ?string $modelPreset = null,
+        ?string $modelCustom = null,
+        ?string $chatBasePrompt = null,
+        ?string $insightBasePrompt = null,
+        bool $deleteApiKey = false
+    ): bool {
+        Piwik::checkUserHasAdminAccess($idSite);
+
+        $values = [];
+        foreach ([
+            'host' => $host,
+            'apiKey' => $apiKey,
+            'modelPreset' => $modelPreset,
+            'modelCustom' => $modelCustom,
+            'chatBasePrompt' => $chatBasePrompt,
+            'insightBasePrompt' => $insightBasePrompt,
+        ] as $name => $value) {
+            if ($value !== null) {
+                $values[$name] = trim(Common::unsanitizeInputValue($value));
+            }
+        }
+
+        // only an explicit request deletes the key of the website, an empty value keeps it
+        if ($deleteApiKey) {
+            $values['apiKey'] = '';
+        } elseif (isset($values['apiKey']) && $values['apiKey'] === '') {
+            unset($values['apiKey']);
+        }
+
+        if (($values['host'] ?? '') !== '' && !$this->isValidApiUrl($values['host'])) {
+            throw new Exception(Piwik::translate('MistralAI_InvalidApiUrl'));
+        }
+
+        // a saved model that is no longer listed can be kept, so the other settings can still be saved
+        $modelPresetValue = $values['modelPreset'] ?? '';
+        if ($modelPresetValue !== '' && $modelPresetValue !== SiteSettingsStorage::read($idSite)['modelPreset'] && !Config::isAvailableModel($modelPresetValue)) {
+            throw new Exception(Piwik::translate('MistralAI_InvalidModel', [$modelPresetValue]));
+        }
+
+        if (isset($values['modelCustom']) && !preg_match('/^[A-Za-z0-9._:\/@-]{0,200}$/', $values['modelCustom'])) {
+            throw new Exception(Piwik::translate('MistralAI_InvalidModel', [$values['modelCustom']]));
+        }
+
+        $generalPrompts = null;
+        foreach (DefaultPrompts::SETTING_NAMES as $name => $kind) {
+            if (!isset($values[$name]) || $values[$name] === '') {
+                continue;
+            }
+            if ($generalPrompts === null) {
+                $systemSettings = new SystemSettings();
+                $generalPrompts = [
+                    'chatBasePrompt' => $systemSettings->getChatBasePrompt(),
+                    'insightBasePrompt' => $systemSettings->getInsightBasePrompt(),
+                ];
+            }
+            $values[$name] = DefaultPrompts::toStoredSitePrompt($kind, $values[$name], $generalPrompts[$name]);
+        }
+
+        SiteSettingsStorage::save($idSite, $values);
+
+        return true;
+    }
+
+    /**
+     * Sets the general settings, edited on the Mistral AI page of the System administration. A parameter left out keeps
+     * its saved value.
+     *
+     * @param string|null $apiKey the placeholder of the settings page keeps the saved key, like an empty value
+     * @param bool $deleteApiKey removes the saved API key, the only way to remove it
+     */
+    public function setSystemSettings(
+        ?string $host = null,
+        ?string $apiKey = null,
+        ?string $modelPreset = null,
+        ?string $modelCustom = null,
+        ?string $agentModel = null,
+        ?string $chatBasePrompt = null,
+        ?string $insightBasePrompt = null,
+        bool $deleteApiKey = false
+    ): bool {
+        Piwik::checkUserHasSuperUserAccess();
+
+        $values = [
+            'host' => $host,
+            'apiKey' => $apiKey,
+            'modelPreset' => $modelPreset,
+            'modelCustom' => $modelCustom,
+            'agentModel' => $agentModel,
+            'chatBasePrompt' => $chatBasePrompt,
+            'insightBasePrompt' => $insightBasePrompt,
         ];
-
-        // Sanitize module and action (alphanumeric only)
-        $module = isset($widgetParams['module']) ? preg_replace('/[^a-zA-Z0-9]/', '', $widgetParams['module']) : '';
-        $action = preg_replace('/[^a-zA-Z0-9]/', '', $action);
-        $requestParams['_apiMethod'] = $module . '.' . $action;
-
-        // Define supported parameters with their validation rules
-        $supportedParams = [
-            // Standard Matomo API parameters
-            'idSubtable' => 'int',
-            'idAlert' => 'int',
-            'idGoal' => 'int',
-            'idDimension' => 'int',
-            'idNote' => 'int',
-            'idExperiment' => 'int',
-            'idCustomReport' => 'int',
-            'idExport' => 'int',
-            'idLogCrash' => 'int',
-            'idFailure' => 'int',
-            // Premium plugin parameters
-            'idForm' => 'int',
-            'idFunnel' => 'int',
-            'idHeatmap' => 'int',
-            'idSessionRecording' => 'int',
-            // Common parameters
-            'segment' => 'segment',
-            'flat' => 'bool',
-            'expanded' => 'bool',
-            'filter_limit' => 'int',
-            'filter_offset' => 'int',
-        ];
-
-        foreach ($supportedParams as $param => $type) {
-            if (isset($widgetParams[$param]) && $widgetParams[$param] !== '') {
-                $requestParams[$param] = $this->sanitizeParam($widgetParams[$param], $type);
+        foreach ($values as $name => $value) {
+            if ($value !== null) {
+                $values[$name] = Common::unsanitizeInputValue($value);
             }
         }
 
-        return $requestParams;
-    }
+        (new SystemSettingsForm())->save($values, $deleteApiKey);
 
-    /**
-     * Sanitizes a parameter value based on its type
-     */
-    private function sanitizeParam($value, string $type)
-    {
-        switch ($type) {
-            case 'int':
-                return (int) $value;
-            case 'bool':
-                return $value ? 1 : 0;
-            case 'segment':
-                return Common::unsanitizeInputValue($value);
-            default:
-                return Common::sanitizeInputValue($value);
-        }
-    }
-
-    /**
-     * Validates and sanitizes date parameter
-     */
-    private function sanitizeDate(string $date): string
-    {
-        if (preg_match('/^(today|yesterday|last\d+|previous\d+|\d{4}-\d{2}-\d{2}(,\d{4}-\d{2}-\d{2})?)$/', $date)) {
-            return $date;
-        }
-        return 'today';
-    }
-
-    /**
-     * Validates and sanitizes period parameter
-     */
-    private function sanitizePeriod(string $period): string
-    {
-        $allowedPeriods = ['day', 'week', 'month', 'year', 'range'];
-        return in_array($period, $allowedPeriods, true) ? $period : 'day';
-    }
-
-    /**
-     * Resolves the API method from widget parameters
-     * Handles evolution graph controller actions by extracting the real API method
-     */
-    private function resolveReportMethod(string $reportId, array $widgetParams = []): string
-    {
-        $evolutionActions = ['getEvolutionGraph', 'getEvolutionOverview', 'getRowEvolution'];
-
-        $parts = explode('.', $reportId, 2);
-        if (count($parts) !== 2) {
-            return $reportId;
-        }
-
-        $module = $parts[0];
-        $action = $parts[1];
-
-        if (in_array($action, $evolutionActions, true)) {
-            if (!empty($widgetParams['apiMethod'])) {
-                return $widgetParams['apiMethod'];
-            }
-            if (!empty($widgetParams['method'])) {
-                return $widgetParams['method'];
-            }
-
-            // Special handling for CustomReports evolution graphs
-            // CustomReports doesn't have a 'get' method, always use getCustomReport
-            if ($module === 'CustomReports') {
-                return 'CustomReports.getCustomReport';
-            }
-
-            return $module . '.get';
-        }
-
-        return $reportId;
-    }
-
-    /**
-     * Only Matomo reports can be requested for an insight, never any other API method
-     * @throws Exception if the API method is not a report
-     */
-    private function checkIsReportMethod(string $apiMethod): void
-    {
-        [$module, $action] = explode('.', $apiMethod, 2);
-
-        if (ReportsProvider::factory($module, $action) === null) {
-            throw new Exception('Insights are only available for Matomo reports');
-        }
+        return true;
     }
 
     /**
@@ -373,9 +337,9 @@ class API extends \Piwik\Plugin\API
      *
      * @throws Exception if configuration is missing or API call fails
      */
-    private function fetchModelAi(array $conversation, int $idSite): array
+    private function fetchModelAi(array $conversation, EffectiveSettings $settings): array
     {
-        $config = $this->getAiConfig($idSite);
+        $config = $this->getAiConfig($settings);
 
         // Sanitize conversation messages
         $sanitizedConversation = $this->sanitizeConversation($conversation);
@@ -403,6 +367,12 @@ class API extends \Piwik\Plugin\API
         curl_setopt($ch, CURLOPT_TIMEOUT, self::REQUEST_TIMEOUT);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
+        $responseHeaders = [];
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $header) use (&$responseHeaders) {
+            $this->collectHeader($header, $responseHeaders);
+            return strlen($header);
+        });
+
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
@@ -415,6 +385,14 @@ class API extends \Piwik\Plugin\API
 
         if (empty($response)) {
             throw new Exception('Empty response from MistralAI API');
+        }
+
+        if ($httpCode !== 200) {
+            $reason = ModelUpgradeNotice::classifyApiError($httpCode, (string) $response, $responseHeaders);
+            if ($reason !== null) {
+                $this->logger->warning('MistralAI API model error (HTTP ' . $httpCode . ') for model ' . $config['model'] . ': ' . substr($response, 0, 500));
+                return ['error' => ModelUpgradeNotice::build($reason, $settings)];
+            }
         }
 
         $result = json_decode($response, true);
@@ -431,7 +409,7 @@ class API extends \Piwik\Plugin\API
 
         if ($httpCode !== 200) {
             $this->logger->error('MistralAI API HTTP ' . $httpCode . ': ' . substr($response, 0, 500));
-            throw new Exception('MistralAI API returned HTTP ' . $httpCode);
+            return ['error' => ['message' => $this->extractApiErrorMessage((string) $response, $httpCode, $config['model'])]];
         }
 
         return $result;
@@ -441,9 +419,9 @@ class API extends \Piwik\Plugin\API
      * Streams a conversation response using Server-Sent Events
      * This method outputs directly to the response stream
      */
-    private function streamModelAi(array $conversation, int $idSite): void
+    private function streamModelAi(array $conversation, EffectiveSettings $settings): void
     {
-        $config = $this->getAiConfig($idSite);
+        $config = $this->getAiConfig($settings);
         $sanitizedConversation = $this->sanitizeConversation($conversation);
 
         $data = [
@@ -485,19 +463,46 @@ class API extends \Piwik\Plugin\API
         curl_setopt($ch, CURLOPT_TIMEOUT, 0); // No timeout for streaming
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
 
-        // Stream the response chunk by chunk
-        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($ch, $chunk) {
-            echo $chunk;
-            flush();
+        // Error responses are plain JSON, not SSE: they are buffered and sent as an SSE error event
+        $isStream = null;
+        $errorBuffer = '';
+        $responseHeaders = [];
+
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $header) use (&$isStream, &$responseHeaders) {
+            if ($isStream === null && stripos($header, 'Content-Type:') === 0) {
+                $isStream = stripos($header, 'text/event-stream') !== false;
+            }
+            $this->collectHeader($header, $responseHeaders);
+            return strlen($header);
+        });
+
+        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($ch, $chunk) use (&$isStream, &$errorBuffer) {
+            if ($isStream) {
+                echo $chunk;
+                flush();
+            } else {
+                $errorBuffer .= $chunk;
+            }
             return strlen($chunk);
         });
 
         curl_exec($ch);
         $error = curl_error($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         if ($error) {
             echo "data: " . json_encode(['error' => ['message' => $error]]) . "\n\n";
+            flush();
+        } elseif ($errorBuffer !== '' || ($httpCode !== 0 && $httpCode !== 200)) {
+            $reason = ModelUpgradeNotice::classifyApiError($httpCode, $errorBuffer, $responseHeaders);
+            if ($reason !== null) {
+                $apiError = ModelUpgradeNotice::build($reason, $settings);
+            } else {
+                $apiError = ['message' => $this->extractApiErrorMessage($errorBuffer, $httpCode, $config['model'])];
+            }
+            $this->logger->warning('MistralAI streaming API error (HTTP ' . $httpCode . '): ' . substr($errorBuffer, 0, 500));
+            echo "data: " . json_encode(['error' => $apiError]) . "\n\n";
             flush();
         }
 
@@ -506,31 +511,54 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
+     * @param array<string, string> $headers lowercase header name => value
+     */
+    private function collectHeader(string $header, array &$headers): void
+    {
+        $parts = explode(':', $header, 2);
+        if (count($parts) === 2) {
+            $headers[strtolower(trim($parts[0]))] = trim($parts[1]);
+        }
+    }
+
+    /**
+     * Extracts a human-readable error message from an error response body
+     */
+    private function extractApiErrorMessage(string $body, int $httpCode, string $model): string
+    {
+        $body = trim($body);
+        if ($body !== '') {
+            $decoded = json_decode($body, true);
+            if (is_array($decoded)) {
+                if (isset($decoded['error']) && is_array($decoded['error']) && !empty($decoded['error']['message'])) {
+                    return (string) $decoded['error']['message'];
+                }
+                if (isset($decoded['error']) && is_string($decoded['error']) && $decoded['error'] !== '') {
+                    return $decoded['error'];
+                }
+                if (!empty($decoded['message']) && is_string($decoded['message'])) {
+                    return $decoded['message'];
+                }
+            }
+            $snippet = preg_replace('/\s+/', ' ', $body);
+            if (mb_strlen($snippet) > 300) {
+                $snippet = mb_substr($snippet, 0, 300) . '...';
+            }
+            return 'API error (HTTP ' . $httpCode . ') for model "' . $model . '": ' . $snippet;
+        }
+
+        return 'API request failed (HTTP ' . $httpCode . ') for model "' . $model . '" with no response body';
+    }
+
+    /**
      * Gets AI configuration for a site
      * @throws Exception if configuration is invalid
      */
-    private function getAiConfig(int $idSite): array
+    private function getAiConfig(EffectiveSettings $settings): array
     {
-        $systemSettings = new SystemSettings();
-        $measurableSettings = new MeasurableSettings($idSite);
-
-        $host = $measurableSettings->host->getValue() ?: $systemSettings->host->getValue();
-        $apiKey = $measurableSettings->apiKey->getValue() ?: $systemSettings->apiKey->getValue();
-
-        // Get model: prefer custom model if set, otherwise use preset
-        $model = $systemSettings->modelCustom->getValue();
-        if (empty($model)) {
-            $model = $systemSettings->modelPreset->getValue();
-        }
-
-        // Check measurable settings override
-        $measurableModelCustom = $measurableSettings->modelCustom->getValue();
-        $measurableModelPreset = $measurableSettings->modelPreset->getValue();
-        if (!empty($measurableModelCustom)) {
-            $model = $measurableModelCustom;
-        } elseif (!empty($measurableModelPreset)) {
-            $model = $measurableModelPreset;
-        }
+        $host = $settings->getHost();
+        $apiKey = $settings->getApiKey();
+        $model = $settings->getModel();
 
         if (empty($host)) {
             throw new Exception('MistralAI host is not configured');
@@ -540,7 +568,7 @@ class API extends \Piwik\Plugin\API
             throw new Exception('MistralAI API key is not configured');
         }
 
-        if (empty($model) || (is_array($model) && empty($model[0]))) {
+        if ($model === '') {
             throw new Exception('MistralAI model is not configured');
         }
 
@@ -551,130 +579,18 @@ class API extends \Piwik\Plugin\API
         return [
             'host' => $host,
             'apiKey' => $apiKey,
-            'model' => is_array($model) ? $model[0] : $model,
+            'model' => $model,
         ];
     }
 
     /**
-     * Parses the messages parameter from POST request
-     * Handles both array and JSON string formats
-     */
-    private function parseMessagesParam($messages): array
-    {
-        // First check $_POST directly
-        if (isset($_POST['messages']) && !empty($_POST['messages'])) {
-            $postMessages = $_POST['messages'];
-            if (is_string($postMessages)) {
-                $decoded = json_decode($postMessages, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    return $decoded;
-                }
-            } elseif (is_array($postMessages)) {
-                return $postMessages;
-            }
-        }
-
-        // Fallback to Common::getRequestVar
-        if (empty($messages) || !is_array($messages)) {
-            $postMessages = Common::getRequestVar('messages', '', 'string', $_POST);
-            if (!empty($postMessages)) {
-                if (is_string($postMessages)) {
-                    $decoded = json_decode($postMessages, true);
-                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                        return $decoded;
-                    }
-                } elseif (is_array($postMessages)) {
-                    return $postMessages;
-                }
-            }
-        }
-
-        // If messages is a JSON string, decode it
-        if (is_string($messages)) {
-            $decoded = json_decode($messages, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                return $decoded;
-            }
-            return [];
-        }
-
-        return is_array($messages) ? $messages : [];
-    }
-
-    /**
-     * Parses the widgetParams parameter from POST request
-     * Handles both array and JSON string formats
-     */
-    private function parseWidgetParams($widgetParams): array
-    {
-        // First check $_POST directly
-        if (isset($_POST['widgetParams']) && !empty($_POST['widgetParams'])) {
-            $postParams = $_POST['widgetParams'];
-            if (is_string($postParams)) {
-                $decoded = json_decode($postParams, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    return $decoded;
-                }
-            } elseif (is_array($postParams)) {
-                return $postParams;
-            }
-        }
-
-        // Fallback to Common::getRequestVar
-        if (empty($widgetParams) || !is_array($widgetParams)) {
-            $postParams = Common::getRequestVar('widgetParams', '', 'string', $_POST);
-            if (!empty($postParams)) {
-                if (is_string($postParams)) {
-                    $decoded = json_decode($postParams, true);
-                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                        return $decoded;
-                    }
-                } elseif (is_array($postParams)) {
-                    return $postParams;
-                }
-            }
-        }
-
-        // If widgetParams is a JSON string, decode it
-        if (is_string($widgetParams)) {
-            $decoded = json_decode($widgetParams, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                return $decoded;
-            }
-            return [];
-        }
-
-        return is_array($widgetParams) ? $widgetParams : [];
-    }
-
-    /**
-     * Sanitizes conversation messages to prevent injection
-     * Note: Mistral API only accepts 'role' and 'content' fields, no 'name' field
+     * Messages with an allowed role, without the name field that the Mistral AI API rejects
      */
     private function sanitizeConversation(array $conversation): array
     {
-        $sanitized = [];
-        $allowedRoles = ['system', 'user', 'assistant'];
-
-        foreach ($conversation as $message) {
-            if (!is_array($message)) {
-                continue;
-            }
-
-            $role = $message['role'] ?? '';
-            if (!in_array($role, $allowedRoles, true)) {
-                continue;
-            }
-
-            // Mistral API only accepts role and content - no name field
-            $sanitizedMessage = [
-                'role' => $role,
-                'content' => (string) ($message['content'] ?? ''),
-            ];
-
-            $sanitized[] = $sanitizedMessage;
-        }
-
-        return $sanitized;
+        return array_map(static function (array $message): array {
+            unset($message['name']);
+            return $message;
+        }, StaticContainer::get(ChatRequestParser::class)->sanitizeConversation($conversation));
     }
 }

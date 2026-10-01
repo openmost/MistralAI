@@ -7,8 +7,9 @@
         <div vue-entry="MistralAI.ChatIndexPage"
              ai-name="mistral-ai"
              ai-label="MistralAI"
-             ai-color="#fd6f00"
+             ai-color="#FA500F"
              api-method="MistralAI.getResponse"
+             model-notice="{{ model_notice|json_encode|e('html_attr') }}"
         ></div>
 
     {% else %}
@@ -16,6 +17,9 @@
         <div class="alert alert-info">
             <strong>{{ 'MistralAI_PluginNotConfigured'|translate }}</strong>
             {{ 'MistralAI_PluginNotConfiguredDescription'|translate }}
+            {% if settings_url %}
+                <a href="{{ settings_url }}">{{ 'MistralAI_SystemSettingsLink'|translate }}</a>
+            {% endif %}
         </div>
 
     {% endif %}

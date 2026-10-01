@@ -1,5 +1,48 @@
 ## Changelog
 
+### 5.11.0
+
+> **No action required.** The settings of your websites, your custom prompts and the model chosen with a previous version are kept.
+
+**Agent mode with the MCP Server plugin**
+
+- When the MCP Server plugin is installed, activated and enabled, the chat and the insights query your real reports through the Matomo tools. Each tool call is shown in a step timeline under the answer.
+- Write actions, such as creating a goal or an annotation, need write mode in MCP Server, and the assistant always waits for the explicit confirmation of the user before it creates, modifies or deletes anything. This rule cannot be removed by editing the prompts.
+- The chat recommends the next step to unlock agent mode: install MCP Server, activate it, enable MCP or enable write mode. Super users get a direct link.
+- New *Agent mode model* general setting, "Latest recommended" by default, as calling tools needs a larger model than chatting.
+
+**Settings**
+
+- One key is enough: the API key of the website, then the general API key. The plugin never uses the Matomo AI Providers plugin, which has no Mistral AI provider.
+- The general settings moved from *Administration > General settings* to a dedicated *Administration > System > Mistral AI* page, with a *Connection* card and a *Prompts* card saved separately, and a *Delete key* button. New API method `MistralAI.setSystemSettings`.
+- The website settings moved from the website edit form to *Administration > Websites > Mistral AI*. New API methods `MistralAI.getSiteSettings` and `MistralAI.setSiteSettings`.
+- Saved API keys are never sent back to the browser, and the general key is only sent to the general host.
+
+**Prompts**
+
+- New default chat and insight prompts written for analytics, translated in every language of the plugin.
+- Default prompts saved by previous versions are upgraded automatically, custom prompts are kept. A *Reset to default* button restores the defaults, and *Use the general prompts* makes a website follow the general prompts again.
+
+**Models**
+
+- New "Latest recommended" model, the default, currently Ministral 3 14B. Updated list: Mistral Medium 3.5, Mistral Large 3, Mistral Small 4, Ministral 3 14B, 8B and 3B. Magistral Medium and Open Mistral Nemo, deprecated by Mistral AI, were removed.
+- When the model is deprecated, retired or not included in the Mistral AI plan, the chat explains it and links to the settings instead of showing the raw API error.
+
+**Chat and insights**
+
+- Redesigned chat: one accessible, keyboard friendly insight panel, readable tables, highlighted code, copy buttons, auto-scroll that stops when you scroll up, and a dedicated chat page with suggested questions.
+- Insights analyse the full report: a compact payload with the totals, the active segment, the period and the comparisons. Evolution graphs, goals, custom reports and the other report widgets are supported, and errors are shown as clean messages.
+- Security: insight requests are restricted to Matomo report and data methods.
+- Security: AI answers are sanitized before being displayed, which fixes links that could run JavaScript when clicked.
+- Errors returned by the model API, including while streaming, are shown as a notice in the chat instead of failing silently.
+- Translated into 6 more languages: Arabic, Chinese (Simplified and Traditional), Japanese, Polish and Portuguese.
+- The rate limit message and the description of the host setting are translated and name Mistral AI instead of GPT.
+- Openmost messages can appear in Matomo, for example on the Events page, once whatever the number of Openmost plugins activated. Banners can be dismissed and link to the Openmost website in the language of the user.
+
+**Compatibility**
+
+- Requires Matomo 5.10.0 or higher, for the theme variables used by the chat. The agent mode needs MCP Server (Matomo 5.8 or higher, PHP 8.1 or higher).
+
 ### 5.10.1
 
 - Security: restrict insight requests to Matomo reports.
@@ -9,7 +52,7 @@
 **Refreshed model list and dark theme support**
 
 #### New Features
-- **Refreshed preset model list**: Added the latest generations — Mistral Large 3, Mistral Medium 3.5, Mistral Small 4 — plus the new Magistral reasoning model (`magistral-medium-latest`). Default model is still `mistral-medium-latest`, which now points to Mistral Medium 3.5.
+- **Refreshed preset model list**: Added the latest generations, Mistral Large 3, Mistral Medium 3.5 and Mistral Small 4, plus the new Magistral reasoning model (`magistral-medium-latest`). Default model is still `mistral-medium-latest`, which now points to Mistral Medium 3.5.
 - **Curated for chat**: The preset list now only contains models suited for back-and-forth discussion of report data. Code-completion specialists (Codestral, Devstral), audio models (Voxtral) and vision-only models (Pixtral) have been removed because they target one-shot tasks rather than conversation.
 - **Dark theme support**: All chat and insight components use Matomo's native CSS theme variables (`--theme-color-background-contrast`, `--theme-color-border`, `--theme-color-background-tinyContrast`), so the UI automatically follows Matomo's light/dark theme without any extra configuration. Fallback values are preserved for Matomo < 5.10.
 
