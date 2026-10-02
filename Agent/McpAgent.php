@@ -592,6 +592,11 @@ class McpAgent
             $mistralMessages[] = ['role' => $message['role'], 'content' => (string) $message['content']];
         }
 
+        // the APIs refuse a conversation that ends with an answer (Mistral AI) or continue that answer (Anthropic)
+        while ($mistralMessages !== [] && $mistralMessages[count($mistralMessages) - 1]['role'] === 'assistant') {
+            array_pop($mistralMessages);
+        }
+
         return $mistralMessages;
     }
 }
