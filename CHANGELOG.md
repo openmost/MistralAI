@@ -25,6 +25,7 @@
 
 - New default chat and insight prompts written for analytics, translated in every language of the plugin.
 - Default prompts saved by previous versions are upgraded automatically, custom prompts are kept. A *Reset to default* button restores the defaults, and *Use the general prompts* makes a website follow the general prompts again.
+- The default prompts ask the assistant to flag the figures of a period that has not ended yet as partial and to compare the same number of elapsed days instead of calling a drop a decline, and to compute every difference, percentage and ratio from the exact numbers. Installs still on a previous default prompt get the new one, custom prompts are kept.
 
 **Models**
 
@@ -34,13 +35,14 @@
 **Chat and insights**
 
 - Redesigned chat: one accessible, keyboard friendly insight panel, readable tables, highlighted code, copy buttons, auto-scroll that stops when you scroll up, and a dedicated chat page with suggested questions.
+- The send button and the logo tiles use the Mistral AI brand colour, and the default accent colour is Mistral orange everywhere instead of ChatGPT green in places.
+- The insight panels of ChatGPT, Mistral AI, Claude and Ask AI close each other when one opens, and closing one no longer lets the page scroll under the panel that is still open.
 - Insights analyse the full report: a compact payload with the totals, the active segment, the period and the comparisons. Evolution graphs, goals, custom reports and the other report widgets are supported, and errors are shown as clean messages.
 - Security: insight requests are restricted to Matomo report and data methods.
 - Security: AI answers are sanitized before being displayed, which fixes links that could run JavaScript when clicked.
 - Errors returned by the model API, including while streaming, are shown as a notice in the chat instead of failing silently.
 - Translated into 6 more languages: Arabic, Chinese (Simplified and Traditional), Japanese, Polish and Portuguese.
 - The rate limit message and the description of the host setting are translated and name Mistral AI instead of GPT.
-- Openmost messages can appear in Matomo, for example on the Events page, once whatever the number of Openmost plugins activated. Banners can be dismissed and link to the Openmost website in the language of the user.
 
 **Compatibility**
 
