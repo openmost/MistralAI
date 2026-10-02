@@ -44,7 +44,7 @@
 
 **Compatibility**
 
-- Requires Matomo 5.10.0 or higher, for the theme variables used by the chat. The agent mode needs MCP Server (Matomo 5.8 or higher, PHP 8.1 or higher).
+- Compatible again with Matomo 5.0.0 or higher, below 6: every Matomo theme variable used by the chat and the insight panel keeps the light theme value of Matomo as a fallback, so the releases without these variables show the light look. The agent mode needs MCP Server (Matomo 5.8 or higher, PHP 8.1 or higher).
 - Smaller package: the Vue source maps, which Matomo does not load, are no longer shipped.
 
 ### 5.10.1
@@ -58,7 +58,7 @@
 #### New Features
 - **Refreshed preset model list**: Added the latest generations, Mistral Large 3, Mistral Medium 3.5 and Mistral Small 4, plus the new Magistral reasoning model (`magistral-medium-latest`). Default model is still `mistral-medium-latest`, which now points to Mistral Medium 3.5.
 - **Curated for chat**: The preset list now only contains models suited for back-and-forth discussion of report data. Code-completion specialists (Codestral, Devstral), audio models (Voxtral) and vision-only models (Pixtral) have been removed because they target one-shot tasks rather than conversation.
-- **Dark theme support**: All chat and insight components use Matomo's native CSS theme variables (`--theme-color-background-contrast`, `--theme-color-border`, `--theme-color-background-tinyContrast`), so the UI automatically follows Matomo's light/dark theme without any extra configuration. Fallback values are preserved for Matomo < 5.10.
+- **Dark theme support**: All chat and insight components use Matomo's native CSS theme variables (`--theme-color-background-contrast`, `--theme-color-border`, `--theme-color-background-tinyContrast`), so the UI automatically follows Matomo's light/dark theme without any extra configuration. Each variable keeps a fallback value for the Matomo releases without them.
 
 #### Notes for Custom Models
 The "Model (Custom)" field still accepts any model name, including code/audio/vision specialists or self-hosted ones (Codestral, Devstral, Voxtral, Pixtral, etc.). Use it whenever you need a model that is no longer in the preset dropdown.

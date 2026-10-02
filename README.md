@@ -56,7 +56,7 @@ The agent mode is optional. Without MCP Server, the chat and the insights keep w
 
 ## Requirements
 
-- Matomo 5.10.0 or higher, below 6 (`>=5.10.0,<6.0.0-b1`). Matomo 5.10 is required for the theme variables used by the chat.
+- Matomo 5.0.0 or higher, below 6 (`>=5.0.0,<6.0.0-b1`).
 - PHP: the version required by your Matomo 5 (PHP 8.1 or higher for the agent mode, required by MCP Server)
 - A Mistral AI API key, or an OpenAI-compatible HTTPS endpoint
 - Optional, for the agent mode: the **MCP Server** plugin from the Marketplace (Matomo 5.8 or higher, PHP 8.1 or higher). Write actions also require write mode to be enabled in the MCP Server settings.

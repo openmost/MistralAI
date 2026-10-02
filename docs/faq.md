@@ -70,7 +70,7 @@ Arabic, Chinese (Simplified and Traditional), Dutch, English, French, German, It
 
 __What are the requirements?__
 
-Matomo 5.10.0 or later, below 6.0.0. The MCP Server plugin is optional, for agent mode: MCP Server 5.x requires Matomo 5.8 and PHP 8.1 or later.
+Matomo 5.0.0 or later, below 6.0.0. The MCP Server plugin is optional, for agent mode: MCP Server 5.x requires Matomo 5.8 and PHP 8.1 or later.
 
 __How do I get support?__
 

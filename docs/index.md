@@ -69,7 +69,7 @@ Each user can send 30 requests per hour and per website.
 
 ## Requirements
 
-- Matomo 5.10.0 or later, below 6.0.0.
+- Matomo 5.0.0 or later, below 6.0.0.
 - PHP: the minimum required by Matomo.
 - A Mistral AI API key, or the URL of an OpenAI-compatible endpoint.
 - Optional: the MCP Server plugin for agent mode. MCP Server 5.x requires Matomo 5.8 and PHP 8.1 or later.
