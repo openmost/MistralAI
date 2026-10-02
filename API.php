@@ -17,6 +17,7 @@ use Piwik\Plugins\MistralAI\Services\ApiConnection;
 use Piwik\Plugins\MistralAI\Services\ChatRequestParser;
 use Piwik\Plugins\MistralAI\Services\InsightNotAvailableException;
 use Piwik\Plugins\MistralAI\Services\InsightReport;
+use Piwik\Plugins\MistralAI\Services\RateLimitExceededException;
 use Piwik\Plugins\MistralAI\Services\RateLimiter;
 use Piwik\Plugins\MistralAI\Services\SafeErrorMessage;
 use Piwik\Plugins\MistralAI\Settings\DefaultPrompts;
@@ -55,7 +56,10 @@ class API extends \Piwik\Plugin\API
         // Get messages from request if not passed or if passed as JSON string
         $messages = StaticContainer::get(ChatRequestParser::class)->parseMessages($messages);
 
-        StaticContainer::get(RateLimiter::class)->check($idSite);
+        $rateLimitError = $this->getRateLimitError($idSite);
+        if ($rateLimitError !== null) {
+            return ['error' => $rateLimitError];
+        }
 
         $settings = EffectiveSettings::forSite($idSite);
         $chatBasePrompt = $settings->getChatBasePrompt();
@@ -81,7 +85,10 @@ class API extends \Piwik\Plugin\API
         $messages = StaticContainer::get(ChatRequestParser::class)->parseMessages($messages);
         $widgetParams = StaticContainer::get(ChatRequestParser::class)->parseWidgetParams($widgetParams);
 
-        StaticContainer::get(RateLimiter::class)->check($idSite);
+        $rateLimitError = $this->getRateLimitError($idSite);
+        if ($rateLimitError !== null) {
+            return ['error' => $rateLimitError];
+        }
 
         $settings = EffectiveSettings::forSite($idSite);
         $insightBasePrompt = $settings->getInsightBasePrompt();
@@ -91,6 +98,8 @@ class API extends \Piwik\Plugin\API
             return ['error' => $insight['error']];
         }
         $data = $insight['data'];
+        // the insights panel opens without a question, or ends with its previous answer when opened again
+        $messages = StaticContainer::get(ChatRequestParser::class)->endWithQuestion($messages, Piwik::translate('MistralAI_InsightAgentPrompt'));
 
         $conversationBase = [
             [
@@ -117,7 +126,11 @@ class API extends \Piwik\Plugin\API
         $messages = StaticContainer::get(ChatRequestParser::class)->parseMessages($messages);
         $widgetParams = StaticContainer::get(ChatRequestParser::class)->parseWidgetParams($widgetParams);
 
-        StaticContainer::get(RateLimiter::class)->check($idSite);
+        $rateLimitError = $this->getRateLimitError($idSite);
+        if ($rateLimitError !== null) {
+            $this->streamError($rateLimitError['message']);
+            return;
+        }
 
         $settings = EffectiveSettings::forSite($idSite);
 
@@ -131,6 +144,8 @@ class API extends \Piwik\Plugin\API
                 return;
             }
             $data = $insight['data'];
+            // the insights panel opens without a question, or ends with its previous answer when opened again
+            $messages = StaticContainer::get(ChatRequestParser::class)->endWithQuestion($messages, Piwik::translate('MistralAI_InsightAgentPrompt'));
 
             $conversationBase = [
                 [
@@ -182,7 +197,7 @@ class API extends \Piwik\Plugin\API
         header('Cache-Control: no-cache, no-store, must-revalidate');
         header('X-Accel-Buffering: no');
 
-        echo "data: " . json_encode(['error' => ['message' => $message]]) . "\n\n";
+        echo "data: " . json_encode(['error' => ['message' => $message]], JSON_INVALID_UTF8_SUBSTITUTE) . "\n\n";
         echo "data: [DONE]\n\n";
         flush();
     }
@@ -481,7 +496,7 @@ class API extends \Piwik\Plugin\API
         curl_close($ch);
 
         if ($error) {
-            echo "data: " . json_encode(['error' => ['message' => $error]]) . "\n\n";
+            echo "data: " . json_encode(['error' => ['message' => $error]], JSON_INVALID_UTF8_SUBSTITUTE) . "\n\n";
             flush();
         } elseif ($errorBuffer !== '' || ($httpCode !== 0 && $httpCode !== 200)) {
             $reason = ModelUpgradeNotice::classifyApiError($httpCode, $errorBuffer, $responseHeaders);
@@ -491,7 +506,7 @@ class API extends \Piwik\Plugin\API
                 $apiError = ['message' => $this->extractApiErrorMessage($errorBuffer, $httpCode, $config['model'])];
             }
             $this->logger->warning('MistralAI streaming API error (HTTP ' . $httpCode . '): ' . substr($errorBuffer, 0, 500));
-            echo "data: " . json_encode(['error' => $apiError]) . "\n\n";
+            echo "data: " . json_encode(['error' => $apiError], JSON_INVALID_UTF8_SUBSTITUTE) . "\n\n";
             flush();
         }
 
@@ -549,5 +564,21 @@ class API extends \Piwik\Plugin\API
             unset($message['name']);
             return $message;
         }, StaticContainer::get(ChatRequestParser::class)->sanitizeConversation($conversation));
+    }
+
+    /**
+     * The refusal of a request over the rate limit, answered like the other errors so the user reads it
+     *
+     * @return array{message: string}|null
+     */
+    private function getRateLimitError(int $idSite): ?array
+    {
+        try {
+            StaticContainer::get(RateLimiter::class)->check($idSite);
+        } catch (RateLimitExceededException $e) {
+            return ['message' => $e->getMessage()];
+        }
+
+        return null;
     }
 }

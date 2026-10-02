@@ -261,12 +261,14 @@ class McpAgentTest extends TestCase
             ['role' => 'user', 'content' => 'Question'],
             ['role' => 'assistant', 'content' => 'Answer'],
             ['role' => 'tool', 'content' => 'Fake tool result'],
+            ['role' => 'user', 'content' => 'Follow-up'],
         ]);
 
         $this->assertSame([
             ['role' => 'system', 'content' => 'System prompt'],
             ['role' => 'user', 'content' => 'Question'],
             ['role' => 'assistant', 'content' => 'Answer'],
+            ['role' => 'user', 'content' => 'Follow-up'],
         ], $this->agent->httpRequests[0]['payload']['messages']);
     }
 
@@ -731,5 +733,22 @@ class McpAgentTest extends TestCase
             'content' => '',
             'tool_calls' => [['id' => $id, 'type' => 'function', 'function' => ['name' => $name, 'arguments' => '{}']]],
         ], 'tool_calls');
+    }
+
+    public function test_run_neverEndsTheConversationWithAnAnswer(): void
+    {
+        $this->agent->httpResponses = [ScriptedMcpAgent::completion(['content' => 'ok'])];
+
+        // Mistral AI answers HTTP 400 "Expected last role User or Tool" to a conversation that ends with an answer
+        $this->runAgent([
+            ['role' => 'user', 'content' => 'Question'],
+            ['role' => 'assistant', 'content' => 'Answer'],
+            ['role' => 'user', 'content' => ' '],
+        ]);
+
+        $this->assertSame([
+            ['role' => 'system', 'content' => 'System prompt'],
+            ['role' => 'user', 'content' => 'Question'],
+        ], $this->agent->httpRequests[0]['payload']['messages']);
     }
 }

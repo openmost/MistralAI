@@ -16,6 +16,7 @@ use Piwik\Plugin\ControllerAdmin;
 use Piwik\Plugins\MistralAI\Agent\McpAgent;
 use Piwik\Plugins\MistralAI\Services\ChatRequestParser;
 use Piwik\Plugins\MistralAI\Services\InsightNotAvailableException;
+use Piwik\Plugins\MistralAI\Services\RateLimitExceededException;
 use Piwik\Plugins\MistralAI\Services\InsightReport;
 use Piwik\Plugins\MistralAI\Services\RateLimiter;
 use Piwik\Plugins\MistralAI\Services\SafeErrorMessage;
@@ -172,6 +173,8 @@ class Controller extends \Piwik\Plugin\Controller
                 if ($messages === [] || $messages[0]['role'] !== 'user') {
                     array_unshift($messages, ['role' => 'user', 'content' => Piwik::translate('MistralAI_InsightAgentPrompt')]);
                 }
+                // opened again on the same report, the panel posts its previous answer last
+                $messages = $parser->endWithQuestion($messages, Piwik::translate('MistralAI_InsightAgentPrompt'));
                 $systemPrompt = $agent->buildSystemPrompt($settings->getInsightBasePrompt(), $idSite, $period, $date, $reportData, $withTools);
             } else {
                 $systemPrompt = $agent->buildSystemPrompt($settings->getChatBasePrompt(), $idSite, $period, $date, null, $withTools);
@@ -264,13 +267,13 @@ class Controller extends \Piwik\Plugin\Controller
         flush();
 
         $emit = static function (string $type, array $data = []): void {
-            echo 'data: ' . json_encode(['type' => $type] + $data) . "\n\n";
+            echo 'data: ' . json_encode(['type' => $type] + $data, JSON_INVALID_UTF8_SUBSTITUTE) . "\n\n";
             flush();
         };
 
         try {
             $producer($emit);
-        } catch (InsightNotAvailableException $e) {
+        } catch (InsightNotAvailableException | RateLimitExceededException $e) {
             $emit('error', ['message' => SafeErrorMessage::fromThrowable($e)]);
         } catch (\Throwable $e) {
             StaticContainer::get(LoggerInterface::class)->error('MistralAI agent error: {message}', [

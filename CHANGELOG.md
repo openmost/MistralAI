@@ -38,6 +38,9 @@
 - The send button and the logo tiles use the Mistral AI brand colour, and the default accent colour is Mistral orange everywhere instead of ChatGPT green in places.
 - The insight panels of ChatGPT, Mistral AI, Claude and Ask AI close each other when one opens, and closing one no longer lets the page scroll under the panel that is still open.
 - Insights analyse the full report: a compact payload with the totals, the active segment, the period and the comparisons. Evolution graphs, goals, custom reports and the other report widgets are supported, and errors are shown as clean messages.
+- Wide answer tables fit the insight panel, their columns wrap or scroll sideways instead of being cut off on the right.
+- Once the limit of 30 requests per hour is reached, the chat and the insight panel show the rate limit message in the language of the user instead of a generic error.
+- Opening the insight panel again on a report it has already analysed no longer fails with an error from Mistral AI, the report is analysed again.
 - Security: insight requests are restricted to Matomo report and data methods.
 - Security: AI answers are sanitized before being displayed, which fixes links that could run JavaScript when clicked.
 - Errors returned by the model API, including while streaming, are shown as a notice in the chat instead of failing silently.
