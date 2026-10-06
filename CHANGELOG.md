@@ -54,6 +54,10 @@
 - Translated into 6 more languages: Arabic, Chinese (Simplified and Traditional), Japanese, Polish and Portuguese.
 - The rate limit message and the description of the host setting are translated and name Mistral AI instead of GPT.
 
+**Documentation**
+
+- README: the plugin description now shows in the Description tab of the Matomo Marketplace.
+
 ### 6.0.1
 
 - Security: restrict insight requests to Matomo reports.
