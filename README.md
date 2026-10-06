@@ -1,10 +1,12 @@
 # Mistral AI for Matomo
 
+## Description
+
 Chat with your Matomo data and get one-click AI insights on any report, powered by Mistral AI or any OpenAI-compatible endpoint, plus an optional agent that queries your live reports through the Matomo MCP tools.
 
-## Features
+### Features
 
-### Insights on any report
+#### Insights on any report
 
 - A square AI button, styled like the Matomo 5 selectors, in the header of each report opens an insight panel that analyses the report you are looking at, then lets you ask follow-up questions.
 - The whole report is analysed as Matomo serves it, not only the visible rows: a compact payload with the rows, the totals, the metric names and units, and the exact API request behind the report.
@@ -13,14 +15,14 @@ Chat with your Matomo data and get one-click AI insights on any report, powered 
 - When a widget cannot be analysed, the panel shows a clear message instead of a raw error.
 - The panel is an accessible dialog: keyboard navigation, focus kept inside the panel, Escape to close.
 
-### Chat
+#### Chat
 
 - A dedicated *Mistral AI* page in the main menu, with suggested questions to get started.
 - Answers stream in real time, with an automatic fallback for servers that do not support streaming.
 - The conversation follows the latest message while it is written, and stops scrolling as soon as you scroll up to read.
 - Answers are rendered as Markdown, with readable tables, highlighted code and copy buttons for an answer or a code block.
 
-### Agent mode, with MCP Server
+#### Agent mode, with MCP Server
 
 When the MCP Server plugin, available on the Matomo Marketplace, is installed, activated and enabled, the chat and the insights switch to agent mode:
 
@@ -33,7 +35,7 @@ When the MCP Server plugin, available on the Matomo Marketplace, is installed, a
 
 The agent mode is optional. Without MCP Server, the chat and the insights keep working with the plugin settings.
 
-### Connection and models
+#### Connection and models
 
 - **One key is enough**: the key of the website is used first, then the general key. The plugin never uses the Matomo AI Providers plugin, which has no Mistral AI provider, so the credential of another provider is never sent to Mistral AI.
 - Works with Mistral AI (default) and any OpenAI-compatible chat completions endpoint served over HTTPS, including self-hosted models. The API key is optional on a custom host.
@@ -41,27 +43,27 @@ The agent mode is optional. Without MCP Server, the chat and the insights keep w
 - Presets curated for conversation: Latest recommended (default, currently Ministral 3 14B), Mistral Medium 3.5, Mistral Large 3, Mistral Small 4, Ministral 3 14B, 8B and 3B. A custom model field accepts any other model name.
 - When the configured model is deprecated, retired or not included in your Mistral AI plan, the chat explains it and links to the settings instead of showing the raw API error.
 
-### Prompts
+#### Prompts
 
 - Default chat and insight prompts written for analytics: the chat answers as a senior analytics consultant, the insights follow a fixed structure (summary, key figures, notable patterns, recommendations).
 - Default prompts of previous versions are upgraded automatically, custom prompts are kept.
 - A prompt equal to the default is not stored, so future improvements of the defaults reach you. A *Reset to default* button restores the default prompts.
 
-### More
+#### More
 
 - Interface and default prompts translated into 13 languages: English, Arabic, Chinese (Simplified and Traditional), Dutch, French, German, Italian, Japanese, Polish, Portuguese, Spanish and Swedish.
 - Follows the Matomo light and dark themes.
 - Rate limit of 30 AI requests per hour, per user and per website.
 - HTTP API: `MistralAI.getResponse`, `MistralAI.getStreamingResponse`, `MistralAI.getInsights`, `MistralAI.getSiteSettings`, `MistralAI.setSiteSettings` and `MistralAI.setSystemSettings`.
 
-## Requirements
+### Requirements
 
 - Matomo 5.0.0 or higher, below 6 (`>=5.0.0,<6.0.0-b1`).
 - PHP: the version required by your Matomo 5 (PHP 8.1 or higher for the agent mode, required by MCP Server)
 - A Mistral AI API key, or an OpenAI-compatible HTTPS endpoint
 - Optional, for the agent mode: the **MCP Server** plugin from the Marketplace (Matomo 5.8 or higher, PHP 8.1 or higher). Write actions also require write mode to be enabled in the MCP Server settings.
 
-## Installation / Configuration
+### Installation / Configuration
 
 1. Install and activate **Mistral AI** from **Administration > Platform > Marketplace**.
 2. As a super user, open **Administration > System > Mistral AI**:
@@ -73,7 +75,7 @@ The agent mode is optional. Without MCP Server, the chat and the insights keep w
 
 Then open the **Mistral AI** page in the main menu, or click the AI button in the header of a report.
 
-## Privacy and data
+### Privacy and data
 
 - Insights send the data of the report you are looking at (labels, metrics and totals), its period, segment and comparisons, and the conversation, to the configured endpoint: Mistral AI by default, or your custom host.
 - The chat sends your messages and the prompts. In agent mode, the results of the Matomo tools called by the assistant are also sent to the endpoint.
@@ -87,7 +89,7 @@ Then open the **Mistral AI** page in the main menu, or click the AI button in th
 - API keys are stored in the Matomo settings and are never sent back to the browser. Conversations are not stored by the plugin.
 - To keep all data on your infrastructure, point the host to a self-hosted model.
 
-## Need help with Matomo?
+### Need help with Matomo?
 
 Openmost is an official Matomo Implementation Partner. We connect Matomo to AI assistants, BI tools and the rest of your stack with [Matomo integrations](https://openmost.com/matomo/services/integration?utm_source=matomo_marketplace&utm_medium=referral&utm_campaign=services&utm_content=mistralai) built on official APIs, with documented and privacy-checked data flows.
 
