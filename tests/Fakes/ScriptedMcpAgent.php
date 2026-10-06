@@ -11,6 +11,7 @@ namespace Piwik\Plugins\MistralAI\tests\Fakes;
 use Piwik\Plugins\MistralAI\Agent\McpAgent;
 use Piwik\Plugins\MistralAI\Agent\MistralApiException;
 use Piwik\Plugins\MistralAI\Config;
+use Piwik\Plugins\MistralAI\Services\DataPrivacy;
 use Piwik\Plugins\MistralAI\Settings\EffectiveSettings;
 
 /**
@@ -126,6 +127,14 @@ class ScriptedMcpAgent extends McpAgent
     protected function isClientGone(): bool
     {
         return $this->clientGone;
+    }
+
+    /** @var array<string, bool> privacy settings, the defaults when empty */
+    public $privacyOptions = [];
+
+    protected function getPrivacy(): DataPrivacy
+    {
+        return new DataPrivacy($this->privacyOptions);
     }
 
     protected function fetchToolCatalog(): array

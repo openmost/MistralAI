@@ -156,7 +156,11 @@ class McpAgentTest extends TestCase
             $this->toolCallResponse('call00001', 'matomo_site_list'),
             ScriptedMcpAgent::completion(['content' => 'The tool failed.']),
         ];
-        $this->agent->toolResults = [new \RuntimeException('No access to this website')];
+        $this->agent->toolResults = [new \RuntimeException('Table not found in /var/www/matomo/core/Db.php:42')];
+        $this->logger->expects($this->once())->method('error')
+            ->with($this->stringContains('tool {tool} failed'), $this->callback(
+                static fn (array $context): bool => str_contains($context['message'], '/var/www/matomo')
+            ));
 
         $this->runAgent([['role' => 'user', 'content' => 'Sites?']]);
 
@@ -164,7 +168,8 @@ class McpAgentTest extends TestCase
         $this->assertSame(['text', ['content' => 'The tool failed.']], $this->events[2]);
         $toolMessage = $this->agent->httpRequests[1]['payload']['messages'][3];
         $this->assertSame('tool', $toolMessage['role']);
-        $this->assertSame('Error: No access to this website', $toolMessage['content']);
+        $this->assertSame(1, preg_match('/^Error: \{"error":"tool_call_failed","reference":"[0-9a-f]{8}","message":"The tool call failed/', $toolMessage['content']));
+        $this->assertStringNotContainsString('/var/www', $toolMessage['content']);
     }
 
     public function test_run_doesNotCallTheTool_whenItsArgumentsAreNotValidJson(): void
@@ -711,6 +716,58 @@ class McpAgentTest extends TestCase
         return array_column($status['recommendations'], 'id');
     }
 
+    public function test_run_masksThePersonalDataOfTheToolResults(): void
+    {
+        $this->agent->httpResponses = [
+            $this->toolCallResponse('call00001', 'matomo_report_processed'),
+            ScriptedMcpAgent::completion(['content' => 'Done.']),
+        ];
+        $this->agent->toolResults = [
+            ['content' => [['type' => 'text', 'text' => 'jane@example.com from 10.1.2.3 on /cart?token=abc']], 'isError' => false],
+        ];
+
+        $this->runAgent([['role' => 'user', 'content' => 'Top visitors?']]);
+
+        $text = $this->agent->httpRequests[1]['payload']['messages'][3]['content'];
+        $this->assertStringContainsString('[email] from [ip] on /cart', $text);
+        $this->assertStringNotContainsString('jane@example.com', $text);
+        $this->assertStringNotContainsString('token=abc', $text);
+    }
+
+    public function test_run_refusesTheVisitorLevelTools_whenThePrivacySettingsExcludeThem(): void
+    {
+        $this->agent->privacyOptions = ['excludeVisitorData' => true];
+        $this->agent->httpResponses = [
+            $this->toolCallResponse('call00001', 'matomo_api_call_read', ['method' => 'Live.getLastVisitsDetails']),
+            ScriptedMcpAgent::completion(['content' => 'I cannot read the visits.']),
+        ];
+
+        $this->runAgent([['role' => 'user', 'content' => 'Last visits?']]);
+
+        $this->assertSame([], $this->agent->toolCalls);
+        $this->assertSame(['tool_result', ['id' => 'call00001', 'isError' => true]], $this->events[1]);
+        $toolMessage = $this->agent->httpRequests[1]['payload']['messages'][3];
+        $this->assertSame('tool', $toolMessage['role']);
+        $this->assertStringStartsWith('Error: ', $toolMessage['content']);
+        $this->assertStringContainsString('visitor-level data', $toolMessage['content']);
+    }
+
+    public function test_run_callsTheVisitorLevelTools_whenThePrivacySettingsAllowThem(): void
+    {
+        $this->agent->privacyOptions = ['excludeVisitorData' => false];
+        $this->agent->httpResponses = [
+            $this->toolCallResponse('call00001', 'matomo_api_call_read', ['method' => 'Live.getLastVisitsDetails']),
+            ScriptedMcpAgent::completion(['content' => 'Here are the visits.']),
+        ];
+        $this->agent->toolResults = [
+            ['content' => [['type' => 'text', 'text' => '[]']], 'isError' => false],
+        ];
+
+        $this->runAgent([['role' => 'user', 'content' => 'Last visits?']]);
+
+        $this->assertSame([['matomo_api_call_read', ['method' => 'Live.getLastVisitsDetails'], 'session-key']], $this->agent->toolCalls);
+    }
+
     private function runAgent(array $messages): void
     {
         $settings = $this->agent->settings ?? ScriptedMcpAgent::settings();
@@ -727,11 +784,13 @@ class McpAgentTest extends TestCase
         }
     }
 
-    private function toolCallResponse(string $id, string $name): array
+    private function toolCallResponse(string $id, string $name, array $input = []): array
     {
+        $arguments = $input === [] ? '{}' : (string) json_encode($input);
+
         return ScriptedMcpAgent::completion([
             'content' => '',
-            'tool_calls' => [['id' => $id, 'type' => 'function', 'function' => ['name' => $name, 'arguments' => '{}']]],
+            'tool_calls' => [['id' => $id, 'type' => 'function', 'function' => ['name' => $name, 'arguments' => $arguments]]],
         ], 'tool_calls');
     }
 

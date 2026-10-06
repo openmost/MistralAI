@@ -15,6 +15,7 @@ use Piwik\Container\StaticContainer;
 use Piwik\Option;
 use Piwik\Piwik;
 use Piwik\Plugins\MistralAI\Config;
+use Piwik\Plugins\MistralAI\Services\InsightNotAvailableException;
 use Piwik\Plugins\MistralAI\Services\InsightReport;
 use Piwik\Plugins\MistralAI\SystemSettings;
 use Piwik\Tests\Framework\Fixture;
@@ -47,6 +48,9 @@ class ApiTest extends IntegrationTestCase
         // the API methods read the site from the request, as when called over HTTP
         $this->originalGet = $_GET;
         $_GET['idSite'] = (string) $this->idSite;
+
+        // off by default, see test_getResponse_answersWithTheConsentMessage_untilASuperUserAllowsTheDataSharing
+        Request::processRequest('MistralAI.setSystemSettings', ['dataSharingAllowed' => '1']);
     }
 
     public function tearDown(): void
@@ -80,6 +84,43 @@ class ApiTest extends IntegrationTestCase
             'date' => 'yesterday',
             'widgetParams' => json_encode(['module' => 'VisitsSummary', 'action' => 'get']),
         ]);
+    }
+
+    public function test_getResponse_answersWithTheConsentMessage_untilASuperUserAllowsTheDataSharing(): void
+    {
+        Request::processRequest('MistralAI.setSystemSettings', ['dataSharingAllowed' => '0']);
+
+        foreach (['MistralAI.getResponse', 'MistralAI.getInsights'] as $method) {
+            $result = Request::processRequest($method, [
+                'idSite' => $this->idSite,
+                'period' => 'day',
+                'date' => 'yesterday',
+                'messages' => json_encode([['role' => 'user', 'content' => 'Hello']]),
+                'widgetParams' => json_encode(['module' => 'VisitsSummary', 'action' => 'get']),
+            ]);
+
+            $this->assertSame(Piwik::translate('MistralAI_DataSharingNotAllowed'), $result['error']['message'] ?? null, $method);
+        }
+    }
+
+    public function test_privacySettings_areSafeByDefault(): void
+    {
+        $settings = new SystemSettings();
+
+        $this->assertFalse($settings->dataSharingAllowed->getDefaultValue());
+        $this->assertTrue($settings->maskPersonalData->getDefaultValue());
+        $this->assertTrue($settings->stripUrlQueryStrings->getDefaultValue());
+        $this->assertTrue($settings->excludeVisitorData->getDefaultValue());
+    }
+
+    public function test_insightReport_refusesTheVisitorLevelReports_whenThePrivacySettingsExcludeThem(): void
+    {
+        Request::processRequest('MistralAI.setSystemSettings', ['excludeVisitorData' => '1']);
+
+        $this->expectException(InsightNotAvailableException::class);
+        $this->expectExceptionMessage(Piwik::translate('MistralAI_VisitorDataExcluded'));
+
+        (new InsightReport())->fetch(['module' => 'Live', 'action' => 'getLastVisitsDetails'], $this->idSite, 'yesterday', 'day');
     }
 
     public function test_systemSettings_defaultToMistralWithoutApiKey(): void

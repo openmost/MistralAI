@@ -2,7 +2,19 @@
 
 {% block content %}
 
-    {% if is_configured %}
+    {% if is_configured and not data_sharing_allowed %}
+
+        <div class="alert alert-info">
+            <strong>{{ 'MistralAI_DataSharingNotAllowedTitle'|translate }}</strong>
+            {{ 'MistralAI_DataSharingNotAllowed'|translate }}
+            {% if settings_url %}
+                <a href="{{ settings_url }}#mistralAiPrivacy">{{ 'MistralAI_DataSharingSettingsLink'|translate }}</a>
+            {% else %}
+                {{ 'MistralAI_AskAdministrator'|translate }}
+            {% endif %}
+        </div>
+
+    {% elseif is_configured %}
 
         <div vue-entry="MistralAI.ChatIndexPage"
              ai-name="mistral-ai"

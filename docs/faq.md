@@ -3,10 +3,14 @@
 __How do I install and configure the plugin?__
 
 1. Install the plugin from the Matomo Marketplace and activate it.
-2. Go to *Administration > System > Mistral AI* as a super user.
+2. Go to *Administration > System > Mistral AI* as a super user. In the **Privacy** card, check **Allow sending Matomo data to the AI provider**: it is off by default.
 3. Paste your Mistral AI API key in the *Connection* card and save.
 
 You can create an API key in the [Mistral AI console](https://console.mistral.ai/).
+
+__The chat says that data sharing is not allowed__
+
+No Matomo data leaves your instance without an explicit decision: a super user must check **Allow sending Matomo data to the AI provider** in **Administration > System > Mistral AI**, **Privacy** card. Other users are asked to contact a super user.
 
 __Where are the settings?__
 

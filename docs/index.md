@@ -41,6 +41,10 @@ With the MCP Server plugin (Matomo Marketplace) installed, activated and enabled
 | Connection | Model (Preset) | Latest recommended (default), Mistral Medium 3.5, Mistral Large 3, Mistral Small 4, Ministral 3 14B, 8B or 3B |
 | Connection | Model (Custom) | Any model name, overrides the preset |
 | Connection | Agent mode model | Model used with the Matomo tools |
+| Privacy | Allow sending Matomo data to the AI provider | Off by default: nothing is sent until a super user checks it |
+| Privacy | Mask e-mail and IP addresses | Replaced with `[email]` and `[ip]` before sending. On by default |
+| Privacy | Remove URL query strings | The parameters after the `?` of the URLs are removed before sending. On by default |
+| Privacy | Exclude visitor-level data | Visits Log, visitor profiles, real-time and User ID reports are kept out. On by default |
 | Prompts | Chat base prompt | Instructions of the chat |
 | Prompts | Insight base prompt | Instructions of the insights |
 
@@ -66,6 +70,12 @@ The key of the website is used first, then the general key. The general key is o
 | `MistralAI.setSystemSettings` | super user | Saves the general settings |
 
 Each user can send 30 requests per hour and per website.
+
+## Privacy and data
+
+- Nothing is sent to the AI provider until a super user checks **Allow sending Matomo data to the AI provider** in **Administration > System > Mistral AI**, **Privacy** card. It is off by default: until then, the chat and the insights tell users to ask a super user to allow it.
+- Before sending, e-mail and IP addresses are replaced with `[email]` and `[ip]`, and URL query strings are removed, in the report data and in the results of the Matomo tools. Both are on by default and can be turned off in the same **Privacy** card.
+- Visitor-level data (Visits Log, visitor profiles, real-time and User ID reports) is excluded by default: the insights and the agent cannot read it until a super user unchecks **Exclude visitor-level data**.
 
 ## Requirements
 

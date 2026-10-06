@@ -50,6 +50,8 @@ class MistralAI extends \Piwik\Plugin
         $translationKeys[] = 'MistralAI_SystemSettingsIntro';
         $translationKeys[] = 'MistralAI_SystemSettingsLink';
         $translationKeys[] = 'MistralAI_SettingsConnectionTitle';
+        $translationKeys[] = 'MistralAI_SettingsPrivacyTitle';
+        $translationKeys[] = 'MistralAI_PrivacySettingsIntro';
         $translationKeys[] = 'MistralAI_SettingsPromptsTitle';
         $translationKeys[] = 'MistralAI_ResetPromptToDefault';
         $translationKeys[] = 'MistralAI_ResetPromptToDefaultHelp';
@@ -76,6 +78,7 @@ class MistralAI extends \Piwik\Plugin
         $translationKeys[] = 'MistralAI_AgentStepError';
         $translationKeys[] = 'MistralAI_EmptyStateTitle';
         $translationKeys[] = 'MistralAI_EmptyStateText';
+        $translationKeys[] = 'MistralAI_DataNotice';
         $translationKeys[] = 'MistralAI_SuggestionsLabel';
         $translationKeys[] = 'MistralAI_SuggestionWeeklyKpis';
         $translationKeys[] = 'MistralAI_SuggestionTopPages';

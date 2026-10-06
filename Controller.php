@@ -15,6 +15,7 @@ use Piwik\Piwik;
 use Piwik\Plugin\ControllerAdmin;
 use Piwik\Plugins\MistralAI\Agent\McpAgent;
 use Piwik\Plugins\MistralAI\Services\ChatRequestParser;
+use Piwik\Plugins\MistralAI\Services\DataPrivacy;
 use Piwik\Plugins\MistralAI\Services\InsightNotAvailableException;
 use Piwik\Plugins\MistralAI\Services\RateLimitExceededException;
 use Piwik\Plugins\MistralAI\Services\InsightReport;
@@ -41,6 +42,7 @@ class Controller extends \Piwik\Plugin\Controller
 
         return $this->renderTemplate('index', [
             'is_configured' => $isConfigured,
+            'data_sharing_allowed' => StaticContainer::get(DataPrivacy::class)->isDataSharingAllowed(),
             'is_custom_host' => $settings->isCustomHost(),
             'settings_url' => Piwik::hasUserSuperUserAccess() ? SystemSettingsForm::getUrl(['idSite' => $idSite]) : '',
             'model_notice' => $isConfigured ? ModelUpgradeNotice::forOutdatedModel($settings) : null,
@@ -99,6 +101,7 @@ class Controller extends \Piwik\Plugin\Controller
         $view->fields = $form->getFields();
         $view->values = $form->getValues();
         $view->defaultPrompts = SystemSettingsForm::getDefaultPrompts();
+        $view->destination = $form->getDataDestination();
 
         return $view->render();
     }
@@ -149,6 +152,12 @@ class Controller extends \Piwik\Plugin\Controller
         Session::close();
 
         $this->streamEvents(function (callable $emit) use ($idSite, $period, $date, $sessionKey) {
+            $dataSharingError = StaticContainer::get(DataPrivacy::class)->getDataSharingError();
+            if ($dataSharingError !== null) {
+                $emit('error', ['message' => $dataSharingError]);
+                return;
+            }
+
             $settings = EffectiveSettings::forSite($idSite);
             if (!$settings->isConfigured()) {
                 $emit('error', ['message' => Piwik::translate('MistralAI_ApiKeyNotConfigured')]);

@@ -74,6 +74,19 @@ final class SystemSettingsForm
     }
 
     /**
+     * Where the data goes, displayed above the privacy settings so the super user knows what the consent covers
+     *
+     * @return list<string>
+     */
+    public function getDataDestination(): array
+    {
+        return [
+            Piwik::translate('MistralAI_DataDestinationHost', SingleValue::toString($this->settings->host->getValue())),
+            Piwik::translate('MistralAI_DataDestinationSiteHosts'),
+        ];
+    }
+
+    /**
      * @return array<string, string> setting name => value, the saved API key replaced by a placeholder
      */
     public function getValues(): array
@@ -166,6 +179,10 @@ final class SystemSettingsForm
             'agentModel' => $this->settings->agentModel,
             'chatBasePrompt' => $this->settings->chatBasePrompt,
             'insightBasePrompt' => $this->settings->insightBasePrompt,
+            'dataSharingAllowed' => $this->settings->dataSharingAllowed,
+            'maskPersonalData' => $this->settings->maskPersonalData,
+            'stripUrlQueryStrings' => $this->settings->stripUrlQueryStrings,
+            'excludeVisitorData' => $this->settings->excludeVisitorData,
         ];
     }
 }

@@ -238,7 +238,10 @@ class SystemSettingsPageTest extends IntegrationTestCase
         $fields = (new SystemSettingsForm())->getFields();
 
         $this->assertSame(
-            ['host', 'apiKey', 'modelPreset', 'modelCustom', 'agentModel', 'chatBasePrompt', 'insightBasePrompt'],
+            [
+                'host', 'apiKey', 'modelPreset', 'modelCustom', 'agentModel', 'chatBasePrompt', 'insightBasePrompt',
+                'dataSharingAllowed', 'maskPersonalData', 'stripUrlQueryStrings', 'excludeVisitorData',
+            ],
             array_column($fields, 'name')
         );
         foreach ($fields as $field) {
@@ -249,6 +252,10 @@ class SystemSettingsPageTest extends IntegrationTestCase
         $this->assertSame(1, preg_match('/<div vue-entry="MistralAI\.ManageSystemSettings"[^>]*>/', $this->renderPage(), $entry));
         $this->assertStringNotContainsString('ai-providers', $entry[0]);
         $this->assertStringNotContainsString('AIProviders', html_entity_decode($entry[0]));
+
+        // the super user sees where the data goes before allowing the data sharing
+        $this->assertStringContainsString('destination=', $entry[0]);
+        $this->assertStringContainsString('api.mistral.ai', html_entity_decode($entry[0]));
     }
 
     public function test_theAgentModel_isInTheConnectionFields_withItsOptions(): void
