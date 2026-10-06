@@ -10,6 +10,7 @@ namespace Piwik\Plugins\MistralAI;
 
 use Piwik\Container\StaticContainer;
 use Piwik\Piwik;
+use Piwik\Plugins\MistralAI\Services\DataPrivacy;
 use Piwik\Plugins\MistralAI\Settings\DefaultPrompts;
 use Piwik\Plugins\MistralAI\Settings\LegacyPrompts;
 use Piwik\Plugins\MistralAI\Settings\SingleValue;
@@ -33,6 +34,10 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
     public $agentModel;
     public $chatBasePrompt;
     public $insightBasePrompt;
+    public $dataSharingAllowed;
+    public $maskPersonalData;
+    public $stripUrlQueryStrings;
+    public $excludeVisitorData;
 
     /** @var Setting|null @deprecated Legacy property for backwards compatibility during updates */
     public $model;
@@ -93,6 +98,15 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
                 return DefaultPrompts::toStoredGeneralPrompt(LegacyPrompts::INSIGHT, $value);
             };
         });
+
+        // nothing is sent to the AI provider until a super user allows it
+        foreach (DataPrivacy::DEFAULTS as $name => $default) {
+            $this->$name = $this->makeSetting($name, $default, FieldConfig::TYPE_BOOL, function (FieldConfig $field) use ($name) {
+                $field->title = Piwik::translate('MistralAI_PrivacySetting_' . $name);
+                $field->description = Piwik::translate('MistralAI_PrivacySetting_' . $name . 'Help');
+                $field->uiControl = FieldConfig::UI_CONTROL_CHECKBOX;
+            });
+        }
     }
 
     /**

@@ -66,6 +66,7 @@ The agent mode is optional. Without MCP Server, the chat and the insights keep w
 1. Install and activate **Mistral AI** from **Administration > Platform > Marketplace**.
 2. As a super user, open **Administration > System > Mistral AI**:
    - **Connection** card: host (an HTTPS URL), API key, chat model and agent mode model. Each card is saved on its own. The saved key is never displayed, and a **Delete key** button removes it. Create a key in the [Mistral AI console](https://console.mistral.ai/).
+   - **Privacy** card: check **Allow sending Matomo data to the AI provider**, off by default. Until a super user checks it, nothing is sent to the provider. The card shows where the data goes, and masks e-mail and IP addresses, removes URL query strings and excludes visitor-level data, all three on by default.
    - **Prompts** card: chat and insight base prompts, with a **Reset to default** button.
 3. Optionally, override the settings for a website in **Administration > Websites > Mistral AI** (website admin access): host, API key, model and prompts, with a **Delete key** button and a **Use the general prompts** button. Empty fields use the general settings.
 4. For the agent mode, install, activate and enable **MCP Server**, and enable write mode in its settings if you want the assistant to perform actions. The chat guides you through each missing step.
@@ -76,7 +77,12 @@ Then open the **Mistral AI** page in the main menu, or click the AI button in th
 
 - Insights send the data of the report you are looking at (labels, metrics and totals), its period, segment and comparisons, and the conversation, to the configured endpoint: Mistral AI by default, or your custom host.
 - The chat sends your messages and the prompts. In agent mode, the results of the Matomo tools called by the assistant are also sent to the endpoint.
-- Raw visitor data is never sent, unless the report itself contains it, for example the Visits Log (limited to 100 visits).
+- Nothing is sent to the AI provider until a super user checks **Allow sending Matomo data to the AI provider** in **Administration > System > Mistral AI**, **Privacy** card. It is off by default: until then, the chat and the insights tell users to ask a super user to allow it.
+- Before sending, e-mail and IP addresses are replaced with `[email]` and `[ip]`, and URL query strings are removed, in the report data and in the results of the Matomo tools. Both are on by default and can be turned off in the same **Privacy** card.
+- Visitor-level data (Visits Log, visitor profiles, real-time and User ID reports) is excluded by default: the insights and the agent cannot read it until a super user unchecks **Exclude visitor-level data**.
+- Report labels can hold values set by visitors (page titles, URLs, referrers, campaign names, custom dimensions). Check the retention and privacy terms of the provider before connecting it, and prefer a self-hosted or EU-hosted endpoint when your data policy requires it.
+- The chat shows every user a notice stating that their questions, and the Matomo data read to answer them, are sent to the AI provider configured by the Matomo administrator.
+- When a Matomo tool fails in agent mode, the model only receives a generic error with a reference: the details stay in the Matomo logs.
 - Insight requests are restricted to Matomo report and data methods, never to an arbitrary API method, and run with the access of the current user.
 - API keys are stored in the Matomo settings and are never sent back to the browser. Conversations are not stored by the plugin.
 - To keep all data on your infrastructure, point the host to a self-hosted model.

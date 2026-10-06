@@ -54,6 +54,9 @@ class KeylessCustomHostTest extends IntegrationTestCase
 
         $this->originalGet = $_GET;
         $_GET['idSite'] = (string) $this->idSite;
+
+        // off by default, see ApiTest::test_getResponse_answersWithTheConsentMessage_untilASuperUserAllowsTheDataSharing
+        Request::processRequest('MistralAI.setSystemSettings', ['dataSharingAllowed' => '1']);
     }
 
     public function tearDown(): void
