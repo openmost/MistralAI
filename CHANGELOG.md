@@ -1,5 +1,9 @@
 ## Changelog
 
+### 6.1.1
+
+- Request parameters are read with `Piwik\Request` instead of the deprecated `Common::getRequestVar`, ready for the next Matomo versions.
+
 ### 6.1.0
 
 > **Action required.** Nothing is sent to the AI provider any more until a super user checks *Allow sending Matomo data to the AI provider* in *Administration > System > Mistral AI*, Privacy card. Until then, the chat and the insights ask users to contact a super user. The settings of your websites, your custom prompts and the model chosen with a previous version are kept.
