@@ -22,6 +22,7 @@ use Piwik\Plugins\MistralAI\Services\InsightReport;
 use Piwik\Plugins\MistralAI\Services\RateLimiter;
 use Piwik\Plugins\MistralAI\Services\SafeErrorMessage;
 use Piwik\Plugins\MistralAI\Settings\EffectiveSettings;
+use Piwik\Plugins\MistralAI\Settings\IniConfig;
 use Piwik\Plugins\MistralAI\Settings\ModelUpgradeNotice;
 use Piwik\Plugins\MistralAI\Settings\SiteSettingsStorage;
 use Piwik\Plugins\MistralAI\Settings\SystemSettingsForm;
@@ -42,6 +43,7 @@ class Controller extends \Piwik\Plugin\Controller
 
         return $this->renderTemplate('index', [
             'is_configured' => $isConfigured,
+            'display_name' => IniConfig::getDisplayName(),
             'data_sharing_allowed' => StaticContainer::get(DataPrivacy::class)->isDataSharingAllowed(),
             'is_custom_host' => $settings->isCustomHost(),
             'settings_url' => Piwik::hasUserSuperUserAccess() ? SystemSettingsForm::getUrl(['idSite' => $idSite]) : '',

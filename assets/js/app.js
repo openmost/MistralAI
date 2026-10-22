@@ -1,5 +1,7 @@
 (function () {
   var OVERLAY_HOST_ID = 'ai-chat-insight-overlay-host-mistralai';
+  // the display_name of the [MistralAI] section of config.ini.php
+  var DISPLAY_NAME = (window.piwik && piwik.mistralAiDisplayName) || 'MistralAI';
 
   // A single insights panel for the whole page, every report trigger drives it through a shared store
   function mountInsightOverlay() {
@@ -11,7 +13,7 @@
     host.id = OVERLAY_HOST_ID;
     host.setAttribute('vue-entry', 'MistralAI.InsightOverlay');
     host.setAttribute('ai-name', 'mistral-ai');
-    host.setAttribute('ai-label', 'MistralAI');
+    host.setAttribute('ai-label', DISPLAY_NAME);
     host.setAttribute('ai-color', '#FA500F');
     host.setAttribute('api-method', 'MistralAI.getInsights');
     document.body.appendChild(host);
@@ -36,12 +38,15 @@
 
     mountInsightOverlay();
 
+    // the insight trigger reads the search, sort and expanded rows of the report within this element
+    element.setAttribute('data-ai-insight-widget', '');
+
     var insightTrigger = document.createElement('div');
     insightTrigger.classList.add('ai-chat-insight-trigger-vue-wrapper');
     insightTrigger.setAttribute('vue-entry', 'MistralAI.InsightTrigger');
     insightTrigger.setAttribute('widget-params', JSON.stringify(parameters));
     insightTrigger.setAttribute('ai-name', 'mistral-ai');
-    insightTrigger.setAttribute('ai-label', 'MistralAI');
+    insightTrigger.setAttribute('ai-label', DISPLAY_NAME);
     insightTrigger.setAttribute('ai-color', '#FA500F');
     insightTrigger.setAttribute('report-title', reportTitle);
     titleWrapper.append(insightTrigger);
