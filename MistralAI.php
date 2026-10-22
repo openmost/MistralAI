@@ -8,6 +8,7 @@
 
 namespace Piwik\Plugins\MistralAI;
 
+use Piwik\Plugins\MistralAI\Settings\IniConfig;
 use Piwik\Plugins\MistralAI\Settings\SiteSettingsStorage;
 
 class MistralAI extends \Piwik\Plugin
@@ -21,6 +22,7 @@ class MistralAI extends \Piwik\Plugin
             'AssetManager.getJavaScriptFiles' => 'getJavaScriptFiles',
             'AssetManager.getStylesheetFiles' => 'getStylesheetFiles',
             'Translate.getClientSideTranslationKeys' => 'getClientSideTranslationKeys',
+            'Template.jsGlobalVariables' => 'addJsGlobalVariables',
         );
     }
 
@@ -93,6 +95,12 @@ class MistralAI extends \Piwik\Plugin
             $translationKeys[] = 'MistralAI_Recommend' . $step;
             $translationKeys[] = 'MistralAI_Recommend' . $step . 'Action';
         }
+    }
+
+    public function addJsGlobalVariables(&$out)
+    {
+        // read by assets/js/app.js, which labels the insight buttons and panel
+        $out .= 'piwik.mistralAiDisplayName = ' . json_encode(IniConfig::getDisplayName(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ";\n";
     }
 
     public function getJavaScriptFiles(&$files)

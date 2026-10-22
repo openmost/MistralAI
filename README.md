@@ -11,6 +11,7 @@ Chat with your Matomo data and get one-click AI insights on any report, powered 
 - An AI button in the header of each report opens an insight panel that analyses the report you are looking at, then lets you ask follow-up questions.
 - The whole report is analysed as Matomo serves it, not only the visible rows: a compact payload with the rows, the totals, the metric names and units, and the exact API request behind the report.
 - The analysis follows what you see: the active segment, the period and the compared periods or segments.
+- The analysis also follows the table as you left it: the search, the sort, the flattening and up to 5 expanded rows, whose subtables are added to the analysis.
 - Works with tables, evolution graphs, goals, custom reports and the other widgets backed by a Matomo report.
 - When a widget cannot be analysed, the panel shows a clear message instead of a raw error.
 - The panel is an accessible dialog: keyboard navigation, focus kept inside the panel, Escape to close.
@@ -53,7 +54,7 @@ The agent mode is optional. Without MCP Server, the chat and the insights keep w
 
 - Interface and default prompts translated into 13 languages: English, Arabic, Chinese (Simplified and Traditional), Dutch, French, German, Italian, Japanese, Polish, Portuguese, Spanish and Swedish.
 - Follows the Matomo light and dark themes.
-- Rate limit of 30 AI requests per hour, per user and per website.
+- Rate limit of 30 AI requests per hour, per user and per website, configurable in `config/config.ini.php`.
 - HTTP API: `MistralAI.getResponse`, `MistralAI.getStreamingResponse`, `MistralAI.getInsights`, `MistralAI.getSiteSettings`, `MistralAI.setSiteSettings` and `MistralAI.setSystemSettings`.
 
 ### Requirements
@@ -72,6 +73,17 @@ The agent mode is optional. Without MCP Server, the chat and the insights keep w
    - **Prompts** card: chat and insight base prompts, with a **Reset to default** button.
 3. Optionally, override the settings for a website in **Administration > Websites > Mistral AI** (website admin access): host, API key, model and prompts, with a **Delete key** button and a **Use the general prompts** button. Empty fields use the general settings.
 4. For the agent mode, install, activate and enable **MCP Server**, and enable write mode in its settings if you want the assistant to perform actions. The chat guides you through each missing step.
+5. Optionally, as a server administrator, tune the plugin in a `[MistralAI]` section of `config/config.ini.php`. Every key is optional:
+
+   ```ini
+   [MistralAI]
+   ; name shown in the top menu, on the chat page and in the insights panel, 40 characters max
+   display_name = "Company AI"
+   ; AI requests per user and per website within the window, 0 disables the limit
+   rate_limit_requests = 30
+   ; length of the window, in seconds
+   rate_limit_window = 3600
+   ```
 
 Then open the **Mistral AI** page in the main menu, or click the AI button in the header of a report.
 

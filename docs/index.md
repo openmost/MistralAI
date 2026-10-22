@@ -11,7 +11,7 @@ Chat with your Matomo data and get one-click AI insights on any report, powered 
 
 ## Report insights
 
-The AI button in the header of each report opens an insight panel. The analysis uses the full report as Matomo serves it: a compact payload with the rows, the totals, the metric names and units, and the exact API request behind the report. The active segment, the period and the compared periods or segments are taken into account. Tables, evolution graphs, goals, custom reports and the other widgets backed by a Matomo report are supported. You can ask follow-up questions in the same panel.
+The AI button in the header of each report opens an insight panel. The analysis uses the full report as Matomo serves it: a compact payload with the rows, the totals, the metric names and units, and the exact API request behind the report. The active segment, the period and the compared periods or segments are taken into account, as well as the table as you left it: the search, the sort, the flattening and up to 5 expanded rows, whose subtables are added to the analysis. Tables, evolution graphs, goals, custom reports and the other widgets backed by a Matomo report are supported. You can ask follow-up questions in the same panel.
 
 The panel is an accessible dialog: keyboard navigation, focus kept inside the panel, Escape to close.
 
@@ -53,6 +53,20 @@ Each card is saved on its own. *Reset to default* fills in the default prompts i
 ### Website settings
 
 *Administration > Websites > Mistral AI* (website admin) overrides the host, API key, model and prompts for one website. Leave a field empty to use the general value. *Use the general prompts* makes the website follow the general prompts again.
+
+### Configuration file
+
+A server administrator can tune the plugin in a `[MistralAI]` section of `config/config.ini.php`. Every key is optional:
+
+```ini
+[MistralAI]
+; name shown in the top menu, on the chat page and in the insights panel, 40 characters max
+display_name = "Company AI"
+; AI requests per user and per website within the window, 0 disables the limit
+rate_limit_requests = 30
+; length of the window, in seconds
+rate_limit_window = 3600
+```
 
 ### API key cascade
 
