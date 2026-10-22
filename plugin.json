@@ -1,7 +1,7 @@
 {
     "name": "MistralAI",
     "description": "Chat with your Matomo data and get one-click AI insights on any report, powered by Mistral AI.",
-    "version": "6.1.2",
+    "version": "6.2.0",
     "theme": false,
     "require": {
         "matomo": ">=6.0.0-b1,<7.0.0-b1",
